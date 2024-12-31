@@ -1,4 +1,5 @@
 #pragma once
+#include <cmath>
 struct vector2
 {
 	float x;
@@ -14,6 +15,7 @@ struct vector2
 
 	static vector2 Add(vector2& a, vector2& b);
 	static vector2 Subtract(vector2& a, vector2& b);
+	static float Dot(vector2& a, vector2& b);
 	static void Multiply(vector2& a, float scalar);
 	static void Divide(vector2& a, float scalar);
 

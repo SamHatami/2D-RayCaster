@@ -154,28 +154,25 @@ void Display::DrawCircle(int pos_x, int pos_y, int radius, uint32_t color, bool 
 	}
 }
 
+//Bresenham's line algorithm
 void Display::DrawLine(line line, uint32_t color) {
 
-	int delta_x = (line.end.x - line.start.x);
-	int delta_y = (line.end.y - line.start.y);
+	const int dX = (line.end.x - line.start.x);
+	const int dY = (line.end.y - line.start.y);
 
-	int side_length = abs(delta_x) >= abs(delta_y) ? abs(delta_x) : abs(delta_y);
+	const int sideLength = abs(dX) >= abs(dY) ? abs(dX) : abs(dY);
 
-	float x_inc = delta_x / (float)side_length;
-	float y_inc = delta_y / (float)side_length;
+	const float xStep = dX / static_cast<float>(sideLength);
+	const float yStep = dY / static_cast<float>(sideLength);
 
-	float current_x = (int)line.start.x;
-	float current_y = (int)line.start.y;
+	float xPos = line.start.x;
+	float yPos = line.start.y;
 
-	for (int i = 0; i <= side_length; i++) {
-		DrawPixel(round(current_x), round(current_y), color);
-		current_x += x_inc;
-		current_y += y_inc;
+	for (int i = 0; i <= sideLength; i++) {
+		DrawPixel(static_cast<int>(roundf(xPos)), static_cast<int>(roundf(yPos)), color);
+		xPos += xStep;
+		yPos += yStep;
 	}
 
 }
 
-void Display::DrawRay(ray&)
-{
-
-}

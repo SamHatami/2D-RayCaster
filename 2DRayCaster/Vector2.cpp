@@ -54,6 +54,12 @@ vector2 vector2::Subtract(vector2& a, vector2& b)
 	return {a.x - b.x, a.y - b.y};
 }
 
+float vector2::Dot(vector2& a, vector2& b)
+{
+
+	return (a.x * b.x + a.y * b.y);
+}
+
 void vector2::Multiply(vector2& a, float scalar)
 {
 	a.x*=scalar;

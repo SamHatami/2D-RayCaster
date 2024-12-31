@@ -2,10 +2,10 @@
 #include <SDL.h>
 struct point
 {
-	int x;
-	int y;
+	float x;
+	float y;
 
-	point(int x = 0, int y = 0) : x(x), y(y) {}
+	point(float x = 0, float y = 0) : x(x), y(y) {}
 
 };
 
