@@ -1,8 +1,5 @@
-
 #include "main.h"
 #include <string>
-
-
 
 int main(int argc, char* argv[])
 {
@@ -12,168 +9,217 @@ int main(int argc, char* argv[])
 
 	//I should probably do it the c++ way instead of the c# way...
 
-	mousePosition = point(0, 0);
+	mousePosition = Point(300, 300);
 	rayCaster = RayCaster();
-	rays = rayCaster.GetRays();
+	rays = rayCaster.getRays();
 
-	SDL_Window* window = display.InitializeWindow(800, 600);
+	SDL_Window* window = display.InitializeWindow(800, 600); // probably use smart pointer for this?
+	light = Light(50, 25, 0xFF0000FF, Light::LightType::Point, &rayCaster);
+	initializeWalls();
 
-	InitializeWalls();
+	const int targetFPS = 32;
+	const int frameDelay = 1000 / targetFPS;
 
-	while (!quit)
+	while (!quit) // listen to esc key event
 	{
-		Uint32 startTicks = SDL_GetTicks();
-		Uint64 startPerf = SDL_GetPerformanceCounter();
-		Update();
+		Uint32 frameStart = SDL_GetTicks();
+		getInputs();
+		update();
 
+		Uint32 frameTime = SDL_GetTicks() - frameStart;
+
+		if (frameDelay > frameTime)
+		{
+			SDL_Delay(frameDelay - frameTime);
+		}
 	}
-	//SDL_Delay(5000); // Wait for 3 seconds
 	SDL_DestroyWindow(window);
 	SDL_Quit();
 	return 0;
 }
 
-void InitializeWalls()
+void initializeWalls()
 {
 	// Window borders
-	walls[0] = line(point(0, 0), point(799, 0)); // Top
-	walls[1] = line(point(799, 0), point(799, 599)); // Right
-	walls[2] = line(point(799, 599), point(0, 599)); // Bottom
-	walls[3] = line(point(0, 599), point(0, 0)); // Left
+	walls[0] = Line(Point(0, 0), Point(799, 0)); // Top
+	walls[1] = Line(Point(799, 0), Point(799, 599)); // Right
+	walls[2] = Line(Point(799, 599), Point(0, 599)); // Bottom
+	walls[3] = Line(Point(0, 599), Point(0, 0)); // Left
 
 	// Rectangle
-	walls[4] = line(point(50, 50), point(50, 100));
-	walls[5] = line(point(50, 100), point(150, 100));
-	walls[6] = line(point(150, 100), point(150, 50));
-	walls[7] = line(point(150, 50), point(50, 50));
+	walls[4] = Line(Point(50, 50), Point(50, 100));
+	walls[5] = Line(Point(50, 100), Point(150, 100));
+	walls[6] = Line(Point(150, 100), Point(150, 50));
+	walls[7] = Line(Point(150, 50), Point(50, 50));
 
 	// Triangle
-	walls[8] = line(point(200, 200), point(300, 200));
-	walls[9] = line(point(300, 200), point(250, 100));
-	walls[10] = line(point(250, 100), point(200, 200));
+	walls[8] = Line(Point(200, 200), Point(300, 200));
+	walls[9] = Line(Point(300, 200), Point(250, 100));
+	walls[10] = Line(Point(250, 100), Point(200, 200));
 
 	// Hexagon
-	walls[11] = line(point(400, 300), point(450, 300));
-	walls[12] = line(point(450, 300), point(475, 350));
-	walls[13] = line(point(475, 350), point(450, 400));
-	walls[14] = line(point(450, 400), point(400, 400));
-	walls[15] = line(point(400, 400), point(375, 350));
-	walls[16] = line(point(375, 350), point(400, 300));
+	walls[11] = Line(Point(400, 300), Point(450, 300));
+	walls[12] = Line(Point(450, 300), Point(475, 350));
+	walls[13] = Line(Point(475, 350), Point(450, 400));
+	walls[14] = Line(Point(450, 400), Point(400, 400));
+	walls[15] = Line(Point(400, 400), Point(375, 350));
+	walls[16] = Line(Point(375, 350), Point(400, 300));
 
 	// Zigzag wall
-	walls[17] = line(point(500, 100), point(550, 150));
-	walls[18] = line(point(550, 150), point(500, 200));
-	walls[19] = line(point(500, 200), point(550, 250));
-	walls[20] = line(point(550, 250), point(500, 300));
+	walls[17] = Line(Point(500, 100), Point(550, 150));
+	walls[18] = Line(Point(550, 150), Point(500, 200));
+	walls[19] = Line(Point(500, 200), Point(550, 250));
+	walls[20] = Line(Point(550, 250), Point(500, 300));
 
 	// Star/cross
-	walls[21] = line(point(600, 400), point(700, 500));
-	walls[22] = line(point(700, 400), point(600, 500));
-	walls[23] = line(point(650, 350), point(650, 550));
-	walls[24] = line(point(550, 450), point(750, 450));
+	walls[21] = Line(Point(600, 400), Point(700, 500));
+	walls[22] = Line(Point(700, 400), Point(600, 500));
+	walls[23] = Line(Point(650, 350), Point(650, 550));
+	walls[24] = Line(Point(550, 450), Point(750, 450));
 }
 
-void GetInputs()
+void getInputs()
 {
-	SDL_Event event;
-
-	SDL_PollEvent(&event);
-
-	switch (event.type)
+	while (SDL_PollEvent(&event))
 	{
-	case SDL_MOUSEMOTION:
-		mousePosition.x = static_cast<float>(event.motion.x);
-		mousePosition.y = static_cast<float>(event.motion.y);
-		break;
-	case SDL_KEYDOWN:
-		if (event.key.keysym.sym == SDLK_ESCAPE)
+		if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)
 		{
 			quit = true;
 		}
-	default: 
-		break;
-	}
-}
-
-void Update()
-{
-	Uint64 start = SDL_GetPerformanceCounter();
-	rayCaster.CastRays(mousePosition);
-	GetInputs();
-	Render();
-	Uint64 end = SDL_GetPerformanceCounter();
-
-
-	float elapsedMS = (end - start) / static_cast<float>(SDL_GetPerformanceFrequency()) * 1000.0f;
-
-	// Cap to 60 FPS
-	SDL_Delay(floor(16.666f - elapsedMS));
-
-
-}
-
-void Render()
-{
-	display.ClearFrameBuffer(0x00000000);
-	//draw rectangle at mouse, with offset of 5 pixels to center it over the tip
-	//display.DrawRectangle(mousePosition.x-5, mousePosition.y-5, 10, 10, 0xFFFFFF00);
-
-
-	//perhaps check which walls are closest to the mouse and only checkhit on those?
-
-	for (int i = 0; i < nrOfWalls; i++)
-	{
-		display.DrawLine(walls[i], 0xFFFFFFFF);
-	}
-
-	for (int i = 0; i < rayCaster.NrOfRays(); i++)
-	{
-		bool rayHasHit = false;
-		float closestDistance = FLT_MAX;
-		point closestHitPoint;
-
-		for (int j = 0; j < nrOfWalls; j++)
+		if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_LEFT)
 		{
-			RayHitResult hit = rayCaster.CheckHit(rays[i], walls[j]);
-
-			if (hit.hasHit)
-			{
-				const float distance = sqrtf(pow(hit.hitPoint.x - rays[i].start.x, 2) +
-					powf(hit.hitPoint.y - rays[i].start.y, 2));
-				if (distance < closestDistance)
-				{
-					closestDistance = distance;
-					closestHitPoint = hit.hitPoint;
-					rayHasHit = true;
-				}
-			}
+			light.decreaseIntensity();
 		}
 
-		// Update ray color based on hit status
-		if (rayHasHit)
+		if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RIGHT )
 		{
-			rays[i].color = 0xFFFF00FF;
-			display.DrawCircle(closestHitPoint.x, closestHitPoint.y, 5, 0xFF0000FF, false);
+			light.increaseIntensity();
+		}
+
+		if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_0)
+		{
+			showRays = !showRays;
+		}
+
+		if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_1)
+		{
+			showLightBoundary = !showLightBoundary;
+		}
+
+
+		else if (event.type == SDL_MOUSEMOTION)
+		{
+			int x, y;
+			SDL_GetMouseState(&x, &y);
+			mousePosition.x = static_cast<float>(x);
+			mousePosition.y = static_cast<float>(y);
+		}
+	}
+}
+
+void update()
+{
+
+	calculateRayHits();
+	render();
+}
+
+void displayRays()
+{
+	// Update ray color based on hit status
+
+	rays = rayCaster.getRays();
+
+	for (int i = 0; i< RayCaster::nrOfRays(); i++)
+	{
+		float closestDistance = 0.0f;
+		if (rays[i].hitResult.hasHit)
+		{
+			rays[i].color = 0xFF0000FF;
+			display.drawCircle(rays[i].hitResult.hitPoint.x, rays[i].hitResult.hitPoint.y, 5, 0xFF0000FF, false);
+			closestDistance = rays[i].hitResult.distance;
 		}
 		else
 		{
-			rays[i].color = 0x00FFFFFF;
+			rays[i].color = 0xFFFFFFFF;
 			closestDistance = rays[i].length;
 		}
 
 		// Draw the ray
-		line line = {
+		Line line = {
 			rays[i].start,
-			point(
+			Point(
 				rays[i].start.x + (rays[i].direction.x * closestDistance),
 				rays[i].start.y + (rays[i].direction.y * closestDistance))
 		};
-		display.DrawLine(line, rays[i].color);
+
+		display.drawLine(line, rays[i].color);
 
 		// Draw the ray start point
-		display.DrawCircle(rays[i].start.x, rays[i].start.y, 3, 0xFF00FF00, false);
+		//display.drawCircle(ray.start.x, ray.start.y, 3, 0xFF00FF00, false);
 	}
 
-	//display.DrawRectangle(200, 200, 100, 100, 0xFFFFFF00);
-	display.Render();
+}
+
+void render()
+{
+	display.clearFrameBuffer(0x00000000);
+
+
+
+	light.setPosition(mousePosition);
+	light.updateBoundary();
+
+	if (showLightBoundary)
+		display.drawLightBoundary(light);
+
+	display.drawLight(light);
+
+	if (showRays)
+		displayRays();
+
+	for (const auto& wall : walls)
+	{
+		display.drawLine(wall, 0xFFFFFFFF);
+	}
+
+	display.render();
+}
+
+void calculateRayHits()
+{
+	rayCaster.castRays(light);
+
+	// Loop through all rays
+	for (int i = 0; i < RayCaster::nrOfRays(); i++)
+	{
+		// Initialize variables to track the closest hit for the current ray
+		float closestHitDistance = RayCaster::MAX_RAY_LENGTH;
+		Point closestHitPoint;
+
+		// Loop through all walls and check for intersections
+		for (const auto& wall : walls)
+		{
+			// Check if the current ray hits the wall
+			RayHitResult result = rayCaster.checkHit(rays[i], wall);
+
+			// If a hit occurs and it's closer than the previous closest hit
+			if (result.hasHit && result.distance < closestHitDistance)
+			{
+				closestHitDistance = result.distance;
+				closestHitPoint = result.hitPoint;
+			}
+		}
+
+		// Now closestHitPoint contains the closest hit point for ray[i]
+		// You can update the ray hit result here if necessary:
+		if (closestHitDistance < RayCaster::MAX_RAY_LENGTH)
+		{
+			rays[i].hitResult = { true, closestHitPoint, closestHitDistance };
+		}
+		else
+		{
+			rays[i].hitResult = { false, {}, 0 };  // No hit
+		}
+	}
 }

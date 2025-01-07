@@ -1,42 +1,65 @@
 #pragma once
 #include <SDL.h>
-struct point
+
+struct Point
 {
 	float x;
 	float y;
 
-	point(float x = 0, float y = 0) : x(x), y(y) {}
-
+	Point(float x = 0, float y = 0) : x(x), y(y)
+	{
+	}
 };
 
-struct line
+struct Line
 {
-	point start;
-	point end;
+	Point start;
+	Point end;
 	uint32_t color;
 
-	line() : start(point()), end(point()), color(0) {}
+	Line() : start(Point()), end(Point()), color(0)
+	{
+	}
 
-	line(point start, point end, uint32_t color = 0xFFFFFF)
-		: start(start), end(end), color(color) {}
+	Line(Point start, Point end, uint32_t color = 0xFFFFFF)
+		: start(start), end(end), color(color)
+	{
+	}
 };
 
-struct circle {
-	point center;
+struct Circle
+{
+	Point center;
 	float radius;
 	uint32_t color;
 
-	circle(point center, float radius, uint32_t color = 0xFFFFFF)
-		: center(center), radius(radius), color(color) {}
+	Circle(Point center, float radius, uint32_t color = 0xFFFFFF)
+		: center(center), radius(radius), color(color)
+	{
+	}
 };
 
-struct rectangle {
-	point start;
+struct Rectangle
+{
+	Point start;
 	int width;
 	int height;
 	uint32_t color;
 
-	rectangle(point start, int width, int height, uint32_t color = 0xFFFFFF)
-		: start(start), width(width), height(height), color(color) {}
+	Rectangle(Point start, int width, int height, uint32_t color = 0xFFFFFF)
+		: start(start), width(width), height(height), color(color)
+	{
+	}
 };
 
+struct BoundingBox
+{
+	float minX;
+	float maxX;
+	float minY;
+	float maxY;
+};
+
+BoundingBox getBoundingBoxFromTriangle(Point& a, Point& b, Point& c);
+float distanceBetweenPoint(Point& a, Point& b);
+bool pointsAreCoincident(Point& a, Point& b);

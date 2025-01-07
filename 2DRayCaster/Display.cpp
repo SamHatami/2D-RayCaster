@@ -12,59 +12,64 @@ SDL_Window* Display::InitializeWindow(int width, int height)
 {
 	window_width = width;
 	window_height = height;
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) < 0) {
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) < 0)
+	{
 		std::cerr << "SDL could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
 		return nullptr;
 	}
 
 
-    SDL_Window* window = SDL_CreateWindow(
-        "2D Point Light - Ray Casting",
-        SDL_WINDOWPOS_CENTERED,
-        SDL_WINDOWPOS_CENTERED,
+	SDL_Window* window = SDL_CreateWindow(
+		"2D Point Light - Ray Casting",
+		SDL_WINDOWPOS_CENTERED,
+		SDL_WINDOWPOS_CENTERED,
 		window_width, window_height,
-        SDL_WINDOW_SHOWN
-    );
+		SDL_WINDOW_SHOWN
+	);
 
-    if (window == nullptr) {
-        std::cerr << "Window could not be created! SDL_Error: " << SDL_GetError() << std::endl;
-        SDL_Quit();
-        return nullptr;
-    }
+	if (window == nullptr)
+	{
+		std::cerr << "Window could not be created! SDL_Error: " << SDL_GetError() << std::endl;
+		SDL_Quit();
+		return nullptr;
+	}
 
 	frameBuffer = new uint32_t[window_width * window_height]();
 	renderer = SDL_CreateRenderer(window, -1, 0);
-	colorBufferTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_STREAMING, width, height);
-    return window;
+	colorBufferTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_STREAMING, width,
+	                                       height);
+	return window;
 }
 
-void Display::Render(void) {
-	SDL_UpdateTexture(colorBufferTexture, NULL, frameBuffer, (int)(window_width * sizeof(uint32_t))); //Swithc to streaming in the future
+void Display::render(void)
+{
+	SDL_UpdateTexture(colorBufferTexture, NULL, frameBuffer, (int)(window_width * sizeof(uint32_t)));
+	//Swithc to streaming in the future
 	SDL_RenderClear(renderer);
 
 	SDL_RenderCopy(renderer, colorBufferTexture, NULL, NULL);
 	SDL_RenderPresent(renderer);
-
 }
 
 
-void Display::DestroyWindow(SDL_Window* window)
+void Display::destroyWindow(SDL_Window* window)
 {
-    SDL_DestroyWindow(window);
-    SDL_Quit();
+	SDL_DestroyWindow(window);
+	SDL_Quit();
 }
 
 
-void Display::ClearFrameBuffer(uint32_t color) {
-	for (int i = 0; i < window_width*window_height; i++) {
+void Display::clearFrameBuffer(uint32_t color)
+{
+	for (int i = 0; i < window_width * window_height; i++)
+	{
 		frameBuffer[i] = color;
 	}
 }
 
 
-
-
-void Display::DrawRectangle(int start_x, int start_y, int width, int height, uint32_t color) {
+void Display::drawRectangle(int start_x, int start_y, int width, int height, uint32_t color)
+{
 	//Check if start values and size values are within the window,
 	// else the for loop below will not be able to compute,
 	// index out of bound on color buffer
@@ -83,15 +88,17 @@ void Display::DrawRectangle(int start_x, int start_y, int width, int height, uin
 	}
 }
 
-void Display::DrawPixel(int x, int y, uint32_t color) {
-
-	if (x >= 0 && x < window_width && y >= 0 && y < window_height) {
+void Display::drawPixel(int x, int y, uint32_t color)
+{
+	if (x >= 0 && x < window_width && y >= 0 && y < window_height)
+	{
 		frameBuffer[(window_width * y) + x] = color;
 	}
 }
 
 
-void Display::DrawPoint(int pos_x, int pos_y, int size, uint32_t color) {
+void Display::drawPoint(int pos_x, int pos_y, int size, uint32_t color)
+{
 	//Check if start values and size values are within the window,
 	// else the for loop below will not be able to compute,
 	// index out of bound on color buffer
@@ -102,8 +109,8 @@ void Display::DrawPoint(int pos_x, int pos_y, int size, uint32_t color) {
 		return;
 
 
-	if (pos_x >= 0 && pos_y >= 0 && pos_x <= window_height && pos_y <= window_width) {
-
+	if (pos_x >= 0 && pos_y >= 0 && pos_x <= window_height && pos_y <= window_width)
+	{
 		for (int y = pos_y; y < pos_y + size; y++)
 		{
 			for (int x = pos_x; x < pos_x + size; x++)
@@ -112,14 +119,13 @@ void Display::DrawPoint(int pos_x, int pos_y, int size, uint32_t color) {
 			}
 		}
 	}
-
 }
 
-void Display::DrawCircle(int pos_x, int pos_y, int radius, uint32_t color, bool fill)
+void Display::drawCircle(int pos_x, int pos_y, int radius, uint32_t color, bool fill)
 {
 	//Check if start values and size values are within the window,
-		// else the for loop below will not be able to compute,
-		// index out of bound on color buffer
+	// else the for loop below will not be able to compute,
+	// index out of bound on color buffer
 
 	if (pos_x >= window_width || pos_x <= 0)
 		return;
@@ -132,14 +138,14 @@ void Display::DrawCircle(int pos_x, int pos_y, int radius, uint32_t color, bool 
 
 	while (x >= y)
 	{
-		DrawPixel(pos_x + x, pos_y + y, color);
-		DrawPixel(pos_x + y, pos_y + x, color);
-		DrawPixel(pos_x - y, pos_y + x, color);
-		DrawPixel(pos_x - x, pos_y + y, color);
-		DrawPixel(pos_x - x, pos_y - y, color);
-		DrawPixel(pos_x - y, pos_y - x, color);
-		DrawPixel(pos_x + y, pos_y - x, color);
-		DrawPixel(pos_x + x, pos_y - y, color);
+		drawPixel(pos_x + x, pos_y + y, color);
+		drawPixel(pos_x + y, pos_y + x, color);
+		drawPixel(pos_x - y, pos_y + x, color);
+		drawPixel(pos_x - x, pos_y + y, color);
+		drawPixel(pos_x - x, pos_y - y, color);
+		drawPixel(pos_x - y, pos_y - x, color);
+		drawPixel(pos_x + y, pos_y - x, color);
+		drawPixel(pos_x + x, pos_y - y, color);
 
 		if (err <= 0)
 		{
@@ -155,8 +161,8 @@ void Display::DrawCircle(int pos_x, int pos_y, int radius, uint32_t color, bool 
 }
 
 //Bresenham's line algorithm
-void Display::DrawLine(line line, uint32_t color) {
-
+void Display::drawLine(Line line, uint32_t color)
+{
 	const int dX = (line.end.x - line.start.x);
 	const int dY = (line.end.y - line.start.y);
 
@@ -168,11 +174,97 @@ void Display::DrawLine(line line, uint32_t color) {
 	float xPos = line.start.x;
 	float yPos = line.start.y;
 
-	for (int i = 0; i <= sideLength; i++) {
-		DrawPixel(static_cast<int>(roundf(xPos)), static_cast<int>(roundf(yPos)), color);
+	for (int i = 0; i <= sideLength; i++)
+	{
+		drawPixel(static_cast<int>(roundf(xPos)), static_cast<int>(roundf(yPos)), color);
 		xPos += xStep;
 		yPos += yStep;
 	}
-
 }
 
+void Display::drawLightBoundary(Light& light)
+{
+	std::vector<Point> boundaryPoints = light.getBoundaryPoints();
+
+	for (int i = 0; i < boundaryPoints.size(); i++)
+	{
+		Point& pointA = boundaryPoints[i];
+		Point& pointB = boundaryPoints[(i + 1) % boundaryPoints.size()];
+
+		//drawPoint(boundaryPoints[i].x, boundaryPoints[i].y, 5, 0xFFFF0000);
+		drawLine(Line{pointA, pointB}, 0xFF00FF00);
+	}
+}
+
+void Display::drawLight(Light& light)
+{
+	//I know that each segment of the light is in order since the rays are in order
+
+	std::vector<Point> boundaryPoints = light.getBoundaryPoints();
+
+	for (int i = 0; i < boundaryPoints.size(); i++)
+	{
+		Point& pointA = boundaryPoints[i];
+		Point& pointB = boundaryPoints[(i + 1) % boundaryPoints.size()];
+
+		if (pointsAreCoincident(pointA,pointB))
+			continue;
+
+		BoundingBox boundingBox = getBoundingBoxFromTriangle(pointA, pointB,
+		                                                     light.getCenterPoint());
+
+		if (boundingBox.minX >= boundingBox.maxX || boundingBox.minY >= boundingBox.maxY)
+			continue;
+
+		rasterizeTriangle(pointA, pointB, light.getCenterPoint(), boundingBox,
+		                  light.getColor(), light, light.getCenterPoint(), light.getIntensity());
+	}
+}
+
+
+void Display::rasterizeTriangle(Point& pointA, Point& pointB, Point& pointC, BoundingBox& boundingBox, uint32_t color,
+                                Light& light, Point& centerPoint, float lightIntensity)
+{
+	bool setPixelColor = false;
+
+
+	//TODO: You really need to figure out this int / float thing. Point positions on screen cant be float!
+	for (int i = boundingBox.minX; i < boundingBox.maxX; i++)
+	{
+		for (int j = boundingBox.minY; j < boundingBox.maxY; j++)
+		{
+			auto pixelPosition = Point{static_cast<float>(i), static_cast<float>(j)};
+
+			float w0 = baryCentricCoordinates(pointB, pointC, pixelPosition);
+			float w1 = baryCentricCoordinates(pointC, pointA, pixelPosition);
+			float w2 = baryCentricCoordinates(pointA, pointB, pixelPosition);
+
+			if (w0 >= 0 && w1 >= 0 && w2 >= 0)
+			{
+				float dx = centerPoint.x - pixelPosition.x;
+				float dy = centerPoint.y - pixelPosition.y;
+				float distanceSquared = dx * dx + dy * dy;
+
+				float intensity = std::min(lightIntensity / (distanceSquared), 1.0f);
+
+				uint8_t red = static_cast<uint8_t>(255 * intensity);    // Less red
+				uint8_t green = static_cast<uint8_t>(255 * intensity);  // More green
+				uint8_t blue = static_cast<uint8_t>(255 * intensity);   // Full blue
+				uint8_t alpha = static_cast<uint8_t>(255 * intensity);  // Slightly transparent
+
+				// Calculate the color of the pixel
+				uint32_t pixelColor = (red << 24) | (green << 16) | (blue << 8) | alpha;
+
+				// Draw the pixel
+				drawPixel(pixelPosition.x, pixelPosition.y, pixelColor);
+			}
+		}
+	}
+}
+
+
+//https://www.scratchapixel.com/lessons/3d-basic-rendering/rasterization-practical-implementation/rasterization-stage.html
+float Display::baryCentricCoordinates(const Point& a, const Point& b, const Point& c)
+{
+	return (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
+}
