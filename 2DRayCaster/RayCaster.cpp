@@ -1,47 +1,56 @@
 #include "RayCaster.h"
 #include <cmath>
-
+#include "DirectionalLight.h"
 #include "Light.h"
+#include "PointLight.h"
 
-RayCaster::RayCaster() //This is more or less basis for a round light
+
+RayCaster::RayCaster()
 {
-	for (int i = 0; i < NR_OF_RAYS; i++)
-	{
-		rays[i].direction = vector2{ cos(i * ANGULAR_DIRECTION), sin(i * ANGULAR_DIRECTION) };
-		rays[i].direction.Normalize();
-		rays[i].rayNr = i;
-		rays[i].length = RayCaster::MAX_RAY_LENGTH;
-	}
 }
 
 void RayCaster::castRays(Light& lightSource)
 {
-	switch (lightSource.type())
+
+	std::vector<Ray> rays = lightSource.getRays();
+
+	switch (lightSource.getType())
 	{
 	case Light::LightType::Point:
+
 		for (int i = 0; i < NR_OF_RAYS; i++)
 		{
-			Point centerPoint = lightSource.getCenterPoint();
+			Point centerPoint = lightSource.getPosition();
 			rays[i].resetHitResult();
 			rays[i].start = centerPoint;
 			rays[i].end = Point{
-				centerPoint.x + rays[i].direction.x * MAX_RAY_LENGTH,
-				centerPoint.y + rays[i].direction.y * MAX_RAY_LENGTH
+				centerPoint.x + rays[i].direction.x * lightSource.MAX_RAY_LENGTH,
+				centerPoint.y + rays[i].direction.y * lightSource.MAX_RAY_LENGTH
 			};
 		}
 		break;
 
 	case Light::LightType::Directional:
+
+		DirectionalLight& dirLight = static_cast<DirectionalLight&>(lightSource);
+		for (int i = 0; i < NR_OF_RAYS; i++)
+		{
+			Point centerPoint = lightSource.getPosition();
+			rays[i].resetHitResult();
+			rays[i].start = Point{
+				i* dirLight.raySpacing*cosf(dirLight.angularDirection),
+				i* dirLight.raySpacing*sinf(dirLight.angularDirection)
+			};
+			rays[i].end = Point{
+				rays[i].start.x + dirLight.direction.x * dirLight.rayLength,
+				rays[i].start.y + dirLight.direction.y * dirLight.rayLength
+			};
+		}
 		break;
 	}
 }
 
-Ray* RayCaster::getRays()
-{
-	return rays;
-}
-
-RayHitResult RayCaster::checkHit(const Ray& ray, const Line& lineSegment)
+RayHitResult RayCaster::checkHit(const Ray& ray, const Line& lineSegment, Light& light)
 {
 	//Reset ray length
 
@@ -82,8 +91,16 @@ RayHitResult RayCaster::checkHit(const Ray& ray, const Line& lineSegment)
 	const float distanceToHit = sqrtf(powf(ray.start.x - hitPoint.x, 2) +
 		powf(ray.start.y - hitPoint.y, 2));
 
-	float raySpacing = distanceToHit * tanf(ANGULAR_DIRECTION);
-	float snapThreshold = raySpacing * 0.6f; // Adjust this multiplier to tune sensitivity
+
+	float snapThreshold = 0.0f;
+
+	if (const PointLight* pointLight = dynamic_cast<PointLight*>(&light)) {
+		float raySpacing = distanceToHit * tanf(pointLight -> getAngularDirection());
+		snapThreshold = raySpacing * 0.6f;
+	}
+	else if (const DirectionalLight* dirLight = dynamic_cast<DirectionalLight*>(&light)) {
+		snapThreshold = dirLight->raySpacing * 0.6f;
+	}
 
 	trySnapToVertex(hitPoint, lineSegment, snapThreshold);
 

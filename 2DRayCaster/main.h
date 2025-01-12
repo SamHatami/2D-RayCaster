@@ -1,7 +1,8 @@
 #pragma once
 #include "Display.h"
-#include "Light.h"
+#include "PointLight.h"
 #include "RayCaster.h"
+#include "LightingSystem.h"
 
 
 bool quit = false;
@@ -9,10 +10,11 @@ Display display;
 RayCaster rayCaster;
 Point mousePosition;
 constexpr int NR_OF_WALLS = 25;
-Line walls[NR_OF_WALLS];
-Ray* rays;
+std::vector<Line> walls;
+std::vector<Ray> rays;
 SDL_Event event;
-Light light;
+PointLight pointLight;
+LightingSystem lightingSystem;
 bool showRays;
 bool showLightBoundary;
 

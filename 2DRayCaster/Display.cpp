@@ -1,6 +1,8 @@
 #include <SDL.h>
 #include "Display.h"
 #include "Geometry.h"
+#include "Light.h"
+#include "PointLight.h"
 
 uint32_t* frameBuffer = NULL;
 SDL_Texture* colorBufferTexture = NULL;
@@ -182,7 +184,7 @@ void Display::drawLine(Line line, uint32_t color)
 	}
 }
 
-void Display::drawLightBoundary(Light& light)
+void Display::drawLightBoundary(PointLight& light)
 {
 	std::vector<Point> boundaryPoints = light.getBoundaryPoints();
 
@@ -200,24 +202,30 @@ void Display::drawLight(Light& light)
 {
 	//I know that each segment of the light is in order since the rays are in order
 
-	std::vector<Point> boundaryPoints = light.getBoundaryPoints();
-
-	for (int i = 0; i < boundaryPoints.size(); i++)
+	switch (light.getType())
 	{
-		Point& pointA = boundaryPoints[i];
-		Point& pointB = boundaryPoints[(i + 1) % boundaryPoints.size()];
+	case Light::LightType::Point:
+		auto& pointLight = static_cast<PointLight&>(light);
 
-		if (pointsAreCoincident(pointA,pointB))
-			continue;
+		std::vector<Point> boundaryPoints = pointLight.getBoundaryPoints();
 
-		BoundingBox boundingBox = getBoundingBoxFromTriangle(pointA, pointB,
-		                                                     light.getCenterPoint());
+		for (int i = 0; i < boundaryPoints.size(); i++)
+		{
+			Point& pointA = boundaryPoints[i];
+			Point& pointB = boundaryPoints[(i + 1) % boundaryPoints.size()];
 
-		if (boundingBox.minX >= boundingBox.maxX || boundingBox.minY >= boundingBox.maxY)
-			continue;
+			if (pointsAreCoincident(pointA, pointB))
+				continue;
 
-		rasterizeTriangle(pointA, pointB, light.getCenterPoint(), boundingBox,
-		                  light.getColor(), light, light.getCenterPoint(), light.getIntensity());
+			BoundingBox boundingBox = getBoundingBoxFromTriangle(pointA, pointB,
+			                                                     pointLight.getPosition());
+
+			if (boundingBox.minX >= boundingBox.maxX || boundingBox.minY >= boundingBox.maxY)
+				continue;
+
+			rasterizeTriangle(pointA, pointB, pointLight.getPosition(), boundingBox,
+			                  pointLight.getColor(), pointLight, pointLight.getPosition(), pointLight.getIntensity());
+		}
 	}
 }
 
@@ -247,10 +255,10 @@ void Display::rasterizeTriangle(Point& pointA, Point& pointB, Point& pointC, Bou
 
 				float intensity = std::min(lightIntensity / (distanceSquared), 1.0f);
 
-				uint8_t red = static_cast<uint8_t>(255 * intensity);    // Less red
-				uint8_t green = static_cast<uint8_t>(255 * intensity);  // More green
-				uint8_t blue = static_cast<uint8_t>(255 * intensity);   // Full blue
-				uint8_t alpha = static_cast<uint8_t>(255 * intensity);  // Slightly transparent
+				uint8_t red = static_cast<uint8_t>(255 * intensity); // Less red
+				uint8_t green = static_cast<uint8_t>(255 * intensity); // More green
+				uint8_t blue = static_cast<uint8_t>(255 * intensity); // Full blue
+				uint8_t alpha = static_cast<uint8_t>(255 * intensity); // Slightly transparent
 
 				// Calculate the color of the pixel
 				uint32_t pixelColor = (red << 24) | (green << 16) | (blue << 8) | alpha;

@@ -140,19 +140,25 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DirectionalLight.cpp" />
     <ClCompile Include="Display.cpp" />
     <ClCompile Include="Geometry.cpp" />
     <ClCompile Include="Light.cpp" />
+    <ClCompile Include="LightingSystem.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="Ray.cpp" />
     <ClCompile Include="RayCaster.cpp" />
     <ClCompile Include="Vector2.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DirectionalLight.h" />
     <ClInclude Include="Display.h" />
     <ClInclude Include="Geometry.h" />
     <ClInclude Include="Light.h" />
+    <ClInclude Include="LightingSystem.h" />
     <ClInclude Include="main.h" />
+    <ClInclude Include="PointLight.h" />
     <ClInclude Include="Ray.h" />
     <ClInclude Include="RayCaster.h" />
     <ClInclude Include="Vector2.h" />

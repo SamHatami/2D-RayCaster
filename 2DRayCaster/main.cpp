@@ -11,10 +11,10 @@ int main(int argc, char* argv[])
 
 	mousePosition = Point(300, 300);
 	rayCaster = RayCaster();
-	rays = rayCaster.getRays();
-
+	lightingSystem = LightingSystem();
 	SDL_Window* window = display.InitializeWindow(800, 600); // probably use smart pointer for this?
-	light = Light(50, 25, 0xFF0000FF, Light::LightType::Point, &rayCaster);
+	pointLight = PointLight(150, 25, 0xFF0000FF, mousePosition);
+	rays = pointLight.getRays();
 	initializeWalls();
 
 	const int targetFPS = 32;
@@ -40,6 +40,7 @@ int main(int argc, char* argv[])
 
 void initializeWalls()
 {
+	walls.resize(NR_OF_WALLS);
 	// Window borders
 	walls[0] = Line(Point(0, 0), Point(799, 0)); // Top
 	walls[1] = Line(Point(799, 0), Point(799, 599)); // Right
@@ -88,12 +89,12 @@ void getInputs()
 		}
 		if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_LEFT)
 		{
-			light.decreaseIntensity();
+			pointLight.decreaseIntensity();
 		}
 
 		if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RIGHT )
 		{
-			light.increaseIntensity();
+			pointLight.increaseIntensity();
 		}
 
 		if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_0)
@@ -120,7 +121,10 @@ void getInputs()
 void update()
 {
 
-	calculateRayHits();
+	pointLight.setPosition(mousePosition);
+	pointLight.updateBoundary();
+	lightingSystem.updatePointLight(pointLight, walls);
+	//calculateRayHits();
 	render();
 }
 
@@ -128,9 +132,9 @@ void displayRays()
 {
 	// Update ray color based on hit status
 
-	rays = rayCaster.getRays();
+	rays = pointLight.getRays();
 
-	for (int i = 0; i< RayCaster::nrOfRays(); i++)
+	for (int i = 0; i< pointLight.getCurrentResolution(); i++)
 	{
 		float closestDistance = 0.0f;
 		if (rays[i].hitResult.hasHit)
@@ -165,15 +169,10 @@ void render()
 {
 	display.clearFrameBuffer(0x00000000);
 
-
-
-	light.setPosition(mousePosition);
-	light.updateBoundary();
-
 	if (showLightBoundary)
-		display.drawLightBoundary(light);
+		display.drawLightBoundary(pointLight);
 
-	display.drawLight(light);
+	display.drawLight(pointLight);
 
 	if (showRays)
 		displayRays();
@@ -186,40 +185,3 @@ void render()
 	display.render();
 }
 
-void calculateRayHits()
-{
-	rayCaster.castRays(light);
-
-	// Loop through all rays
-	for (int i = 0; i < RayCaster::nrOfRays(); i++)
-	{
-		// Initialize variables to track the closest hit for the current ray
-		float closestHitDistance = RayCaster::MAX_RAY_LENGTH;
-		Point closestHitPoint;
-
-		// Loop through all walls and check for intersections
-		for (const auto& wall : walls)
-		{
-			// Check if the current ray hits the wall
-			RayHitResult result = rayCaster.checkHit(rays[i], wall);
-
-			// If a hit occurs and it's closer than the previous closest hit
-			if (result.hasHit && result.distance < closestHitDistance)
-			{
-				closestHitDistance = result.distance;
-				closestHitPoint = result.hitPoint;
-			}
-		}
-
-		// Now closestHitPoint contains the closest hit point for ray[i]
-		// You can update the ray hit result here if necessary:
-		if (closestHitDistance < RayCaster::MAX_RAY_LENGTH)
-		{
-			rays[i].hitResult = { true, closestHitPoint, closestHitDistance };
-		}
-		else
-		{
-			rays[i].hitResult = { false, {}, 0 };  // No hit
-		}
-	}
-}
