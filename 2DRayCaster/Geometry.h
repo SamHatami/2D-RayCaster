@@ -1,14 +1,16 @@
 #pragma once
 #include <SDL.h>
 
-struct Point
+//Non light interactive
+
+struct Point //Mathematically it make sense, not sure if this causes confusion, since it does the same as vec2. 
 {
 	float x;
 	float y;
 
-	Point(float x = 0, float y = 0) : x(x), y(y)
-	{
-	}
+	Point(float x = 0, float y = 0) : x(x), y(y){}
+
+
 };
 
 struct Line

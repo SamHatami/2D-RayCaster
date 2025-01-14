@@ -53,7 +53,7 @@ float Light::getIntensity() const
 	return intensity;
 }
 
-void Light::castRays()
+void Light::castRays(const std::vector<Point> points)
 {
 
 }

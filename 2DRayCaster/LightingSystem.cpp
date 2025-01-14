@@ -1,4 +1,5 @@
 #include "LightingSystem.h"
+#include "DirectionalLight.h"
 
 
 void LightingSystem::updatePointLight(PointLight& light, const std::vector<Line>& walls)
@@ -37,4 +38,17 @@ void LightingSystem::updatePointLight(PointLight& light, const std::vector<Line>
 			light.rays[i].hitResult = { false, {}, 0 };  // No hit
 		}
 	}
+}
+
+void LightingSystem::updateDirectionalLight(DirectionalLight& directional, const std::vector<Wall> walls)
+{
+	std::vector<Point> endPoints;
+
+	for (int i = 0; walls.size(); i++) //add all endPoints, then do check for distinct points.
+	{
+		endPoints.push_back(walls[i].definition.start);
+		endPoints.push_back(walls[i].definition.end);
+	}
+
+	directional.castRays(endPoints);
 }

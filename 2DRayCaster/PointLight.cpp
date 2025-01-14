@@ -28,7 +28,7 @@ PointLight::PointLight(float radius, float intensity, uint32_t color, Point posi
     updateBoundary();
 }
 
-void PointLight::castRays()
+void PointLight::castRays(const std::vector<Point> points)
 {
     for (int i = 0; i < rays.size(); i++)
     {

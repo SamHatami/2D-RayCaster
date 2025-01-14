@@ -50,7 +50,7 @@ void RayCaster::castRays(Light& lightSource)
 	}
 }
 
-RayHitResult RayCaster::checkHit(const Ray& ray, const Line& lineSegment, Light& light)
+RayHitResult RayCaster::checkHit(const Ray& ray, const Line& lineSegment, Light& light) // each ray can do this instead
 {
 	//Reset ray length
 

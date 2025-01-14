@@ -1,8 +1,11 @@
 #pragma once
+#include <iosfwd>
 #include <memory>
+#include <vector>
 #include <vector>
 #include "Ray.h"
 #include "Geometry.h"
+#include "Wall.h"
 
 class Light
 {
@@ -54,7 +57,7 @@ public:
 
 	float getIntensity() const;
 
-	virtual void castRays();
+	virtual void castRays(const std::vector<Point> points = {});
 
 	uint32_t getColor() const;
 	void setColor(uint32_t newColor);

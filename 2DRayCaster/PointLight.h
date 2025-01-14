@@ -12,7 +12,7 @@ private:
 
 public:
 
-	void castRays() override;
+	void castRays(const std::vector<Point> points = {}) override;
 	void updateBoundary();
 	float getAngularDirection() const;
 	float getRadius();

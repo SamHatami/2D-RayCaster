@@ -71,8 +71,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\SDL2-2.30.1\SDL2_ttf-2.22.0\include;C:\SDL2-2.30.1\SDL2_image-2.8.4\include;C:\SDL2-2.30.1\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\SDL2-2.30.1\SDL2_ttf-2.22.0\lib\x64;C:\SDL2-2.30.1\SDL2_image-2.8.4\lib\x64;C:\SDL2-2.30.1\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\SDL2-2.30.1\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\SDL2-2.30.1\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>C:\SDL2-2.30.1\include;$(IncludePath)</IncludePath>
@@ -150,6 +150,7 @@
     <ClCompile Include="Ray.cpp" />
     <ClCompile Include="RayCaster.cpp" />
     <ClCompile Include="Vector2.cpp" />
+    <ClCompile Include="Wall.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DirectionalLight.h" />
@@ -162,6 +163,7 @@
     <ClInclude Include="Ray.h" />
     <ClInclude Include="RayCaster.h" />
     <ClInclude Include="Vector2.h" />
+    <ClInclude Include="Wall.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
