@@ -7,8 +7,8 @@
 uint32_t* frameBuffer = NULL;
 SDL_Texture* colorBufferTexture = NULL;
 SDL_Renderer* renderer = NULL;
-int window_width;
 int window_height;
+int window_width;
 
 SDL_Window* Display::InitializeWindow(int width, int height)
 {
@@ -19,7 +19,6 @@ SDL_Window* Display::InitializeWindow(int width, int height)
 		std::cerr << "SDL could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
 		return nullptr;
 	}
-
 
 	SDL_Window* window = SDL_CreateWindow(
 		"2D Point Light - Ray Casting",
@@ -39,7 +38,7 @@ SDL_Window* Display::InitializeWindow(int width, int height)
 	frameBuffer = new uint32_t[window_width * window_height]();
 	renderer = SDL_CreateRenderer(window, -1, 0);
 	colorBufferTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_STREAMING, width,
-	                                       height);
+		height);
 	return window;
 }
 
@@ -53,13 +52,11 @@ void Display::render(void)
 	SDL_RenderPresent(renderer);
 }
 
-
 void Display::destroyWindow(SDL_Window* window)
 {
 	SDL_DestroyWindow(window);
 	SDL_Quit();
 }
-
 
 void Display::clearFrameBuffer(uint32_t color)
 {
@@ -68,7 +65,6 @@ void Display::clearFrameBuffer(uint32_t color)
 		frameBuffer[i] = color;
 	}
 }
-
 
 void Display::drawRectangle(int start_x, int start_y, int width, int height, uint32_t color)
 {
@@ -98,7 +94,6 @@ void Display::drawPixel(int x, int y, uint32_t color)
 	}
 }
 
-
 void Display::drawPoint(int pos_x, int pos_y, int size, uint32_t color)
 {
 	//Check if start values and size values are within the window,
@@ -109,7 +104,6 @@ void Display::drawPoint(int pos_x, int pos_y, int size, uint32_t color)
 		return;
 	if (pos_y >= window_height || pos_y <= 0)
 		return;
-
 
 	if (pos_x >= 0 && pos_y >= 0 && pos_x <= window_height && pos_y <= window_width)
 	{
@@ -194,7 +188,7 @@ void Display::drawLightBoundary(PointLight& light)
 		Point& pointB = boundaryPoints[(i + 1) % boundaryPoints.size()];
 
 		//drawPoint(boundaryPoints[i].x, boundaryPoints[i].y, 5, 0xFFFF0000);
-		drawLine(Line{pointA, pointB}, 0xFF00FF00);
+		drawLine(Line{ pointA, pointB }, 0xFF00FF00);
 	}
 }
 
@@ -218,30 +212,28 @@ void Display::drawLight(Light& light)
 				continue;
 
 			BoundingBox boundingBox = getBoundingBoxFromTriangle(pointA, pointB,
-			                                                     pointLight.getPosition());
+				pointLight.getPosition());
 
 			if (boundingBox.minX >= boundingBox.maxX || boundingBox.minY >= boundingBox.maxY)
 				continue;
 
 			rasterizeTriangle(pointA, pointB, pointLight.getPosition(), boundingBox,
-			                  pointLight.getColor(), pointLight, pointLight.getPosition(), pointLight.getIntensity());
+				pointLight.getColor(), pointLight, pointLight.getPosition(), pointLight.getIntensity());
 		}
 	}
 }
 
-
 void Display::rasterizeTriangle(Point& pointA, Point& pointB, Point& pointC, BoundingBox& boundingBox, uint32_t color,
-                                Light& light, Point& centerPoint, float lightIntensity)
+	Light& light, Point& centerPoint, float lightIntensity)
 {
 	bool setPixelColor = false;
-
 
 	//TODO: You really need to figure out this int / float thing. Point positions on screen cant be float!
 	for (int i = boundingBox.minX; i < boundingBox.maxX; i++)
 	{
 		for (int j = boundingBox.minY; j < boundingBox.maxY; j++)
 		{
-			auto pixelPosition = Point{static_cast<float>(i), static_cast<float>(j)};
+			auto pixelPosition = Point{ static_cast<float>(i), static_cast<float>(j) };
 
 			float w0 = baryCentricCoordinates(pointB, pointC, pixelPosition);
 			float w1 = baryCentricCoordinates(pointC, pointA, pixelPosition);
@@ -270,6 +262,24 @@ void Display::rasterizeTriangle(Point& pointA, Point& pointB, Point& pointC, Bou
 	}
 }
 
+std::pair<int, int> Display::getWindowDimensions()
+{
+	return { window_width, window_height };
+}
+
+std::vector<Line> Display::getWindowBorders()
+{
+	std::vector<Line> boundaries;
+	boundaries.resize(4);
+
+	//Clockwise: up, right, down, left
+	boundaries[0] = Line{ Point{0,0}, Point{0,static_cast<float>(window_width)} };
+	boundaries[1] = Line{ Point{0,static_cast<float>(window_width)} , Point{static_cast<float>(window_height),static_cast<float>(window_width)} };
+	boundaries[1] = Line{ Point{static_cast<float>(window_height),static_cast<float>(window_width)} , Point{static_cast<float>(window_height),0} };
+	boundaries[1] = Line{ Point{static_cast<float>(window_height),0} , Point{0,0} };
+
+	return boundaries;
+}
 
 //https://www.scratchapixel.com/lessons/3d-basic-rendering/rasterization-practical-implementation/rasterization-stage.html
 float Display::baryCentricCoordinates(const Point& a, const Point& b, const Point& c)

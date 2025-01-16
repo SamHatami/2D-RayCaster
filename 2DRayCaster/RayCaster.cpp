@@ -4,14 +4,13 @@
 #include "Light.h"
 #include "PointLight.h"
 
-
 RayCaster::RayCaster()
 {
 }
 
+//Probably obsolete, each light can cast their own rays.
 void RayCaster::castRays(Light& lightSource)
 {
-
 	std::vector<Ray> rays = lightSource.getRays();
 
 	switch (lightSource.getType())
@@ -38,8 +37,8 @@ void RayCaster::castRays(Light& lightSource)
 			Point centerPoint = lightSource.getPosition();
 			rays[i].resetHitResult();
 			rays[i].start = Point{
-				i* dirLight.raySpacing*cosf(dirLight.angularDirection),
-				i* dirLight.raySpacing*sinf(dirLight.angularDirection)
+				i * dirLight.raySpacing * cosf(dirLight.angularDirection),
+				i * dirLight.raySpacing * sinf(dirLight.angularDirection)
 			};
 			rays[i].end = Point{
 				rays[i].start.x + dirLight.direction.x * dirLight.rayLength,
@@ -50,7 +49,7 @@ void RayCaster::castRays(Light& lightSource)
 	}
 }
 
-RayHitResult RayCaster::checkHit(const Ray& ray, const Line& lineSegment, Light& light) // each ray can do this instead
+RayHitResult RayCaster::check_hit(const Ray& ray, const Line& lineSegment, const Light* light, bool snapToEndPoints) // each ray can do this instead
 {
 	//Reset ray length
 
@@ -91,22 +90,22 @@ RayHitResult RayCaster::checkHit(const Ray& ray, const Line& lineSegment, Light&
 	const float distanceToHit = sqrtf(powf(ray.start.x - hitPoint.x, 2) +
 		powf(ray.start.y - hitPoint.y, 2));
 
+	if (light != nullptr && snapToEndPoints)
+	{
+		float snapThreshold = 0.0f;
 
-	float snapThreshold = 0.0f;
+		if (const PointLight* pointLight = dynamic_cast<const PointLight*>(light)) {
+			float raySpacing = distanceToHit * tanf(pointLight->getAngularDirection());
+			snapThreshold = raySpacing * 0.6f;
+		}
 
-	if (const PointLight* pointLight = dynamic_cast<PointLight*>(&light)) {
-		float raySpacing = distanceToHit * tanf(pointLight -> getAngularDirection());
-		snapThreshold = raySpacing * 0.6f;
+		trySnapToVertex(hitPoint, lineSegment, snapThreshold);
 	}
-	else if (const DirectionalLight* dirLight = dynamic_cast<DirectionalLight*>(&light)) {
-		snapThreshold = dirLight->raySpacing * 0.6f;
-	}
-
-	trySnapToVertex(hitPoint, lineSegment, snapThreshold);
 
 	const float distance =
 		sqrtf(powf(ray.start.x - hitPoint.x, 2) + powf(ray.start.y - hitPoint.y, 2));
 
+	//Beyond the ray, no hit
 	if (distance > ray.length + EPSILON)
 	{
 		ray.hitResult = { false, {}, 0 };
@@ -122,10 +121,7 @@ RayHitResult RayCaster::checkHit(const Ray& ray, const Line& lineSegment, Light&
 	return ray.hitResult;
 }
 
-//funny that I don't have vertices...but i mean endpoint that should be called vertices...
-// Idea is that if this hitpoint lies between two hitpoints, then we don't test it for vertex snapping
-// until i actually create actual polygons, but even then we test for each linesegment so that won't matter
-// But if there is no hitpoint on the left or right, we'll see how far we are from either end and snap to it.
+//Only for lights don't already take endPoints in account
 void RayCaster::trySnapToVertex(Point& p, const Line& l, float snapThreshold)
 {
 	float dx = p.x - l.end.x;

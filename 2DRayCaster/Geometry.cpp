@@ -4,6 +4,7 @@
 
 
 
+
 BoundingBox getBoundingBoxFromTriangle(Point& a, Point& b, Point& c)
 {
 	BoundingBox boundingBox = {

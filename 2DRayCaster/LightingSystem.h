@@ -7,7 +7,7 @@ class LightingSystem
 {
 public:
 	LightingSystem() : rayCaster() {};
-	void updatePointLight(PointLight& light, const std::vector<Line>& walls);
+	void updatePointLight(PointLight& light, const std::vector<Wall>& walls);
 	void updateDirectionalLight(DirectionalLight& directional, const std::vector<Wall> wall);
 
 private:

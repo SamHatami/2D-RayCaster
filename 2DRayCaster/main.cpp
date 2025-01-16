@@ -14,8 +14,13 @@ int main(int argc, char* argv[])
 	lightingSystem = LightingSystem();
 	SDL_Window* window = display.InitializeWindow(800, 600); // probably use smart pointer for this?
 	pointLight = PointLight(150, 25, 0xFF0000FF, mousePosition);
+	mainDirectional = DirectionalLight();
 	rays = pointLight.getRays();
 	initializeWalls();
+
+	lightingSystem.updateDirectionalLight(mainDirectional, walls);
+
+
 
 	const int targetFPS = 32;
 	const int frameDelay = 1000 / targetFPS;
@@ -42,41 +47,41 @@ void initializeWalls()
 {
 	walls.resize(NR_OF_WALLS);
 	// Window borders
-	walls[0] = Line(Point(0, 0), Point(799, 0)); // Top
-	walls[1] = Line(Point(799, 0), Point(799, 599)); // Right
-	walls[2] = Line(Point(799, 599), Point(0, 599)); // Bottom
-	walls[3] = Line(Point(0, 599), Point(0, 0)); // Left
+	walls[0] = Wall{ 0, Line(Point(0, 0), Point(799, 0)) }; // Top
+	walls[1] = Wall{ 0, Line(Point(799, 0), Point(799, 599)) }; // Right
+	walls[2] = Wall{ 0, Line(Point(799, 599), Point(0, 599)) }; // Bottom
+	walls[3] = Wall{ 0, Line(Point(0, 599), Point(0, 0)) }; // Left
 
 	// Rectangle
-	walls[4] = Line(Point(50, 50), Point(50, 100));
-	walls[5] = Line(Point(50, 100), Point(150, 100));
-	walls[6] = Line(Point(150, 100), Point(150, 50));
-	walls[7] = Line(Point(150, 50), Point(50, 50));
+	walls[4] = Wall{ 0, Line(Point(50, 50), Point(50, 100)) };
+	walls[5] = Wall{ 0, Line(Point(50, 100), Point(150, 100)) };
+	walls[6] = Wall{ 0, Line(Point(150, 100), Point(150, 50)) };
+	walls[7] = Wall{ 0, Line(Point(150, 50), Point(50, 50)) };
 
 	// Triangle
-	walls[8] = Line(Point(200, 200), Point(300, 200));
-	walls[9] = Line(Point(300, 200), Point(250, 100));
-	walls[10] = Line(Point(250, 100), Point(200, 200));
+	walls[8] = Wall{ 0, Line(Point(200, 200), Point(300, 200)) };
+	walls[9] = Wall{ 0, Line(Point(300, 200), Point(250, 100)) };
+	walls[10] = Wall{ 0, Line(Point(250, 100), Point(200, 200)) };
 
 	// Hexagon
-	walls[11] = Line(Point(400, 300), Point(450, 300));
-	walls[12] = Line(Point(450, 300), Point(475, 350));
-	walls[13] = Line(Point(475, 350), Point(450, 400));
-	walls[14] = Line(Point(450, 400), Point(400, 400));
-	walls[15] = Line(Point(400, 400), Point(375, 350));
-	walls[16] = Line(Point(375, 350), Point(400, 300));
+	walls[11] = Wall{ 0, Line(Point(400, 300), Point(450, 300)) };
+	walls[12] = Wall{ 0, Line(Point(450, 300), Point(475, 350)) };
+	walls[13] = Wall{ 0, Line(Point(475, 350), Point(450, 400)) };
+	walls[14] = Wall{ 0, Line(Point(450, 400), Point(400, 400)) };
+	walls[15] = Wall{ 0, Line(Point(400, 400), Point(375, 350)) };
+	walls[16] = Wall{ 0, Line(Point(375, 350), Point(400, 300)) };
 
 	// Zigzag wall
-	walls[17] = Line(Point(500, 100), Point(550, 150));
-	walls[18] = Line(Point(550, 150), Point(500, 200));
-	walls[19] = Line(Point(500, 200), Point(550, 250));
-	walls[20] = Line(Point(550, 250), Point(500, 300));
+	walls[17] = Wall{ 0, Line(Point(500, 100), Point(550, 150)) };
+	walls[18] = Wall{ 0, Line(Point(550, 150), Point(500, 200)) };
+	walls[19] = Wall{ 0, Line(Point(500, 200), Point(550, 250)) };
+	walls[20] = Wall{ 0, Line(Point(550, 250), Point(500, 300)) };
 
 	// Star/cross
-	walls[21] = Line(Point(600, 400), Point(700, 500));
-	walls[22] = Line(Point(700, 400), Point(600, 500));
-	walls[23] = Line(Point(650, 350), Point(650, 550));
-	walls[24] = Line(Point(550, 450), Point(750, 450));
+	walls[21] = Wall{ 0, Line(Point(600, 400), Point(700, 500)) };
+	walls[22] = Wall{ 0, Line(Point(700, 400), Point(600, 500)) };
+	walls[23] = Wall{ 0, Line(Point(650, 350), Point(650, 550)) };
+	walls[24] = Wall{ 0, Line(Point(550, 450), Point(750, 450)) };
 }
 
 void getInputs()
@@ -124,6 +129,10 @@ void update()
 	pointLight.setPosition(mousePosition);
 	pointLight.updateBoundary();
 	lightingSystem.updatePointLight(pointLight, walls);
+	for (auto ray : mainDirectional.getRays())
+	{
+		display.drawLine(Line{ ray.start,ray.end }, 0xFF32CD32);
+	}
 	//calculateRayHits();
 	render();
 }
@@ -179,7 +188,7 @@ void render()
 
 	for (const auto& wall : walls)
 	{
-		display.drawLine(wall, 0xFFFFFFFF);
+		display.drawLine(wall.definition, 0xFFFFFFFF);
 	}
 
 	display.render();

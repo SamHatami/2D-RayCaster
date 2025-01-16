@@ -2,7 +2,8 @@
 #include "DirectionalLight.h"
 
 
-void LightingSystem::updatePointLight(PointLight& light, const std::vector<Line>& walls)
+
+void LightingSystem::updatePointLight(PointLight& light, const std::vector<Wall>& walls)
 {
 	light.castRays();
 
@@ -17,7 +18,7 @@ void LightingSystem::updatePointLight(PointLight& light, const std::vector<Line>
 		for (const auto& wall : walls)
 		{
 			// Check if the current ray hits the wall
-			RayHitResult result = rayCaster.checkHit(light.rays[i], wall, light);
+			RayHitResult result = rayCaster.check_hit(light.rays[i], wall.definition, &light , true);
 
 			// If a hit occurs and it's closer than the previous closest hit
 			if (result.hasHit && result.distance < closestHitDistance)
@@ -44,11 +45,26 @@ void LightingSystem::updateDirectionalLight(DirectionalLight& directional, const
 {
 	std::vector<Point> endPoints;
 
-	for (int i = 0; walls.size(); i++) //add all endPoints, then do check for distinct points.
+	for (int i = 0; i<walls.size(); i++) //add all endPoints, then do check for distinct points.
 	{
 		endPoints.push_back(walls[i].definition.start);
 		endPoints.push_back(walls[i].definition.end);
 	}
 
 	directional.castRays(endPoints);
+
+	for (auto ray : directional.rays)
+	{
+		for(auto wall: walls)
+		{
+			RayHitResult hitResult = RayCaster::check_hit(ray, wall.definition);
+
+			//the ray hits something, and the distance is shorter than the current rayLength is occluded by another wall
+			if(hitResult.hasHit && hitResult.distance < ray.length)
+			{
+				//pop the ray of the rays list, but you probably cant change a collection size in here.
+			}
+
+		}
+	}
 }
