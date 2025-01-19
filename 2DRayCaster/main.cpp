@@ -13,8 +13,9 @@ int main(int argc, char* argv[])
 	rayCaster = RayCaster();
 	lightingSystem = LightingSystem();
 	SDL_Window* window = display.InitializeWindow(800, 600); // probably use smart pointer for this?
-	pointLight = PointLight(150, 25, 0xFF0000FF, mousePosition);
+	pointLight = PointLight(400, 250, 0xFF0000FF, mousePosition);
 	mainDirectional = DirectionalLight();
+	mainDirectional.direction = vector2{ -0.25,0.25 };
 	rays = pointLight.getRays();
 	initializeWalls();
 
@@ -43,41 +44,42 @@ int main(int argc, char* argv[])
 	return 0;
 }
 
+//TODO: Replace with polygons
 void initializeWalls()
 {
 	walls.resize(NR_OF_WALLS);
-	// Window borders
-	walls[0] = Wall{ 0, Line(Point(0, 0), Point(799, 0)) }; // Top
-	walls[1] = Wall{ 0, Line(Point(799, 0), Point(799, 599)) }; // Right
-	walls[2] = Wall{ 0, Line(Point(799, 599), Point(0, 599)) }; // Bottom
-	walls[3] = Wall{ 0, Line(Point(0, 599), Point(0, 0)) }; // Left
+	// Window borders (counter-clockwise, normals pointing outward)
+	walls[0] = Wall{ 0, Line(Point(0, 0), Point(799, 0)) };      // Top
+	walls[1] = Wall{ 0, Line(Point(799, 0), Point(799, 599)) };  // Right
+	walls[2] = Wall{ 0, Line(Point(799, 599), Point(0, 599)) };  // Bottom
+	walls[3] = Wall{ 0, Line(Point(0, 599), Point(0, 0)) };      // Left
 
-	// Rectangle
-	walls[4] = Wall{ 0, Line(Point(50, 50), Point(50, 100)) };
-	walls[5] = Wall{ 0, Line(Point(50, 100), Point(150, 100)) };
-	walls[6] = Wall{ 0, Line(Point(150, 100), Point(150, 50)) };
-	walls[7] = Wall{ 0, Line(Point(150, 50), Point(50, 50)) };
+	// Rectangle (counter-clockwise)
+	walls[4] = Wall{ 0, Line(Point(50, 50), Point(50, 100)) };     // Left
+	walls[5] = Wall{ 0, Line(Point(50, 100), Point(150, 100)) };   // Bottom
+	walls[6] = Wall{ 0, Line(Point(150, 100), Point(150, 50)) };   // Right
+	walls[7] = Wall{ 0, Line(Point(150, 50), Point(50, 50)) };     // Top
 
-	// Triangle
-	walls[8] = Wall{ 0, Line(Point(200, 200), Point(300, 200)) };
-	walls[9] = Wall{ 0, Line(Point(300, 200), Point(250, 100)) };
-	walls[10] = Wall{ 0, Line(Point(250, 100), Point(200, 200)) };
+	// Triangle (counter-clockwise)
+	walls[8] = Wall{ 0, Line(Point(200, 200), Point(300, 200)) };  // Bottom
+	walls[9] = Wall{ 0, Line(Point(300, 200), Point(250, 100)) };  // Right side
+	walls[10] = Wall{ 0, Line(Point(250, 100), Point(200, 200)) }; // Left side
 
-	// Hexagon
-	walls[11] = Wall{ 0, Line(Point(400, 300), Point(450, 300)) };
-	walls[12] = Wall{ 0, Line(Point(450, 300), Point(475, 350)) };
-	walls[13] = Wall{ 0, Line(Point(475, 350), Point(450, 400)) };
-	walls[14] = Wall{ 0, Line(Point(450, 400), Point(400, 400)) };
-	walls[15] = Wall{ 0, Line(Point(400, 400), Point(375, 350)) };
-	walls[16] = Wall{ 0, Line(Point(375, 350), Point(400, 300)) };
+	// Hexagon (counter-clockwise)
+	walls[11] = Wall{ 0, Line(Point(400, 300), Point(375, 350)) };   // Upper left
+	walls[12] = Wall{ 0, Line(Point(375, 350), Point(400, 400)) };   // Lower left
+	walls[13] = Wall{ 0, Line(Point(400, 400), Point(450, 400)) };   // Bottom
+	walls[14] = Wall{ 0, Line(Point(450, 400), Point(475, 350)) };   // Lower right
+	walls[15] = Wall{ 0, Line(Point(475, 350), Point(450, 300)) };   // Upper right
+	walls[16] = Wall{ 0, Line(Point(450, 300), Point(400, 300)) };   // Top
 
-	// Zigzag wall
+	// Zigzag wall (not an enclosed shape, but maintaining consistent direction top to bottom)
 	walls[17] = Wall{ 0, Line(Point(500, 100), Point(550, 150)) };
 	walls[18] = Wall{ 0, Line(Point(550, 150), Point(500, 200)) };
 	walls[19] = Wall{ 0, Line(Point(500, 200), Point(550, 250)) };
 	walls[20] = Wall{ 0, Line(Point(550, 250), Point(500, 300)) };
 
-	// Star/cross
+	// Star/cross (keeping original since it's not an enclosed shape)
 	walls[21] = Wall{ 0, Line(Point(600, 400), Point(700, 500)) };
 	walls[22] = Wall{ 0, Line(Point(700, 400), Point(600, 500)) };
 	walls[23] = Wall{ 0, Line(Point(650, 350), Point(650, 550)) };
@@ -123,16 +125,29 @@ void getInputs()
 	}
 }
 
+void drawWallNormals()
+{
+	for (Wall wall : walls)
+	{
+		int normalLength = 10;
+		Point normalStart = getMidPoint(wall.definition);
+		Point normalEnd = Point{
+			wall.normal.x * normalLength + normalStart.x,
+			wall.normal.y * normalLength + normalStart.y
+		};
+		display.drawLine(Line{normalStart,normalEnd}, 0xFF00FFFF);
+	}
+}
+
 void update()
 {
 
 	pointLight.setPosition(mousePosition);
 	pointLight.updateBoundary();
 	lightingSystem.updatePointLight(pointLight, walls);
-	for (auto ray : mainDirectional.getRays())
-	{
-		display.drawLine(Line{ ray.start,ray.end }, 0xFF32CD32);
-	}
+
+	std::vector<Ray> rays = mainDirectional.getRays();
+
 	//calculateRayHits();
 	render();
 }
@@ -181,7 +196,11 @@ void render()
 	if (showLightBoundary)
 		display.drawLightBoundary(pointLight);
 
+	display.drawLight(mainDirectional);
+
+
 	display.drawLight(pointLight);
+
 
 	if (showRays)
 		displayRays();
@@ -190,6 +209,14 @@ void render()
 	{
 		display.drawLine(wall.definition, 0xFFFFFFFF);
 	}
+
+	for (auto ray : mainDirectional.getRays())
+	{
+		if (ray.active)
+			display.drawLine(Line{ ray.start,ray.end }, 0xFFFF00FF);
+	}
+
+	drawWallNormals();
 
 	display.render();
 }

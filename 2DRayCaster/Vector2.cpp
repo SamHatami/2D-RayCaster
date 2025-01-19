@@ -35,6 +35,19 @@ vector2 vector2::Normalized() const
 
 }
 
+vector2 vector2::GetNormal(vector2& a)
+{
+	return { -1 * a.y,a.x };
+
+	// x' = x cos(t) - y sin(t)
+	// y' = x sin(t) + y cos(t)
+}
+
+vector2 vector2::PointsToVector2(const Point& a, const Point& b)
+{
+	return { b.x - a.x, b.y - a.y };
+}
+
 float vector2::Magnitude() const
 {
 	return sqrt(x * x + y * y);
@@ -55,6 +68,12 @@ vector2 vector2::Subtract(vector2& a, vector2& b)
 }
 
 float vector2::Dot(vector2& a, vector2& b)
+{
+
+	return (a.x * b.x + a.y * b.y);
+}
+
+float vector2::Dot(const vector2& a, const vector2& b)
 {
 
 	return (a.x * b.x + a.y * b.y);

@@ -1,5 +1,7 @@
 #include <SDL.h>
 #include "Display.h"
+
+#include "DirectionalLight.h"
 #include "Geometry.h"
 #include "Light.h"
 #include "PointLight.h"
@@ -38,7 +40,7 @@ SDL_Window* Display::InitializeWindow(int width, int height)
 	frameBuffer = new uint32_t[window_width * window_height]();
 	renderer = SDL_CreateRenderer(window, -1, 0);
 	colorBufferTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_STREAMING, width,
-		height);
+	                                       height);
 	return window;
 }
 
@@ -188,20 +190,22 @@ void Display::drawLightBoundary(PointLight& light)
 		Point& pointB = boundaryPoints[(i + 1) % boundaryPoints.size()];
 
 		//drawPoint(boundaryPoints[i].x, boundaryPoints[i].y, 5, 0xFFFF0000);
-		drawLine(Line{ pointA, pointB }, 0xFF00FF00);
+		drawLine(Line{pointA, pointB}, 0xFF00FF00);
 	}
 }
 
 void Display::drawLight(Light& light)
 {
-	//I know that each segment of the light is in order since the rays are in order
 
 	switch (light.getType())
 	{
 	case Light::LightType::Point:
+		{
 		auto& pointLight = static_cast<PointLight&>(light);
 
 		std::vector<Point> boundaryPoints = pointLight.getBoundaryPoints();
+
+		//I know that each segment of the light is in order since the rays are in order
 
 		for (int i = 0; i < boundaryPoints.size(); i++)
 		{
@@ -220,11 +224,23 @@ void Display::drawLight(Light& light)
 			rasterizeTriangle(pointA, pointB, pointLight.getPosition(), boundingBox,
 				pointLight.getColor(), pointLight, pointLight.getPosition(), pointLight.getIntensity());
 		}
+
+		}
+
+
+	case Light::LightType::Directional:
+		{
+			auto& dirLight = dynamic_cast<DirectionalLight&>(light);
+
+			break;
+		}
+	default: 
+		break;
 	}
 }
 
 void Display::rasterizeTriangle(Point& pointA, Point& pointB, Point& pointC, BoundingBox& boundingBox, uint32_t color,
-	Light& light, Point& centerPoint, float lightIntensity)
+                                Light& light, Point& centerPoint, float lightIntensity)
 {
 	bool setPixelColor = false;
 
@@ -233,7 +249,7 @@ void Display::rasterizeTriangle(Point& pointA, Point& pointB, Point& pointC, Bou
 	{
 		for (int j = boundingBox.minY; j < boundingBox.maxY; j++)
 		{
-			auto pixelPosition = Point{ static_cast<float>(i), static_cast<float>(j) };
+			auto pixelPosition = Point{static_cast<float>(i), static_cast<float>(j)};
 
 			float w0 = baryCentricCoordinates(pointB, pointC, pixelPosition);
 			float w1 = baryCentricCoordinates(pointC, pointA, pixelPosition);
@@ -264,7 +280,7 @@ void Display::rasterizeTriangle(Point& pointA, Point& pointB, Point& pointC, Bou
 
 std::pair<int, int> Display::getWindowDimensions()
 {
-	return { window_width, window_height };
+	return {window_width, window_height};
 }
 
 std::vector<Line> Display::getWindowBorders()
@@ -273,10 +289,16 @@ std::vector<Line> Display::getWindowBorders()
 	boundaries.resize(4);
 
 	//Clockwise: up, right, down, left
-	boundaries[0] = Line{ Point{0,0}, Point{0,static_cast<float>(window_width)} };
-	boundaries[1] = Line{ Point{0,static_cast<float>(window_width)} , Point{static_cast<float>(window_height),static_cast<float>(window_width)} };
-	boundaries[1] = Line{ Point{static_cast<float>(window_height),static_cast<float>(window_width)} , Point{static_cast<float>(window_height),0} };
-	boundaries[1] = Line{ Point{static_cast<float>(window_height),0} , Point{0,0} };
+	boundaries[0] = Line{Point{0, 0}, Point{0, static_cast<float>(window_width)}};
+	boundaries[1] = Line{
+		Point{0, static_cast<float>(window_width)},
+		Point{static_cast<float>(window_height), static_cast<float>(window_width)}
+	};
+	boundaries[2] = Line{
+		Point{static_cast<float>(window_height), static_cast<float>(window_width)},
+		Point{static_cast<float>(window_height), 0}
+	};
+	boundaries[3] = Line{Point{static_cast<float>(window_height), 0}, Point{0, 0}};
 
 	return boundaries;
 }

@@ -32,6 +32,8 @@ void DirectionalLight::initalizeRays(int nrOfRays)
 
 void DirectionalLight::castRays(const std::vector<Point> endPoints)
 {
+	//Perhaps I should check what is in shadow instead of what is lit?
+
 	//I could cast rays with a certain interval, but that would require alot of rays to be sure that all the endpoints are hit.
 	//raySpacing will be useless here, since I'll just create intermediate rays depending on the distance between each point.
 
@@ -45,34 +47,38 @@ void DirectionalLight::castRays(const std::vector<Point> endPoints)
 		return;
 
 	initalizeRays(endPoints.size()); // probably not a good idea to resize this all the time, but should be called if somthing changes in the window.
+	std::vector<Line> boundaries = Display::getWindowBorders();
 
 	for (int i = 0; i < endPoints.size(); i++)
 	{
 		rays[i].resetHitResult();
-		rays[i].end = endPoints[i];
-		rays[i].start = Point{
-			endPoints[i].x + direction.x * rayLength, // this should hit the window boundary
-			endPoints[i].y + direction.y * rayLength// this should hit the window boundary
-		};
-	}
 
-	//Check against window boundary to get the endpoint
+		float startX = endPoints[i].x + direction.x * rayLength;
+		float startY = endPoints[i].y + direction.y * rayLength;
 
-	const std::vector<Line> boundaries = Display::getWindowBorders();
+		rays[i].start = endPoints[i];
+		rays[i].end = Point{ startX, startY };
+		rays[i].length = rayLength;
 
-	for (int i = 0; i < rays.size(); i++)
-	{
+		//Check against window boundary to get the endpoint and change the length of the ray
+		//TODO The length of the ray should automatically be recalculated evertime start or end point are changed
+
 		for (int j = 0; j < boundaries.size(); j++)
 		{
-			RayHitResult hit_result = RayCaster::check_hit(rays[j], boundaries[j]);
+			RayHitResult hit_result = RayCaster::check_hit(rays[i], boundaries[j]);
 
 			if (hit_result.hasHit)
 			{
 				rays[i].end = hit_result.hitPoint;
+				rays[i].length = distanceBetweenPoint(rays[i].start, rays[i].end);
 				break;
 			}
 		}
 	}
+
+
+
+
 }
 
 //Kept for notes: If the scene was to be flooded with rays to:

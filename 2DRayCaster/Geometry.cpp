@@ -1,8 +1,5 @@
 #include "Geometry.h"
-
 #include <algorithm>
-
-
 
 
 BoundingBox getBoundingBoxFromTriangle(Point& a, Point& b, Point& c)
@@ -31,4 +28,20 @@ bool pointsAreCoincident(Point& a, Point& b)
 	if (a.x == b.x && a.y == b.y)
 		return true;
 	return false;
+}
+
+Point getMidPoint(const Line& line)
+{
+	return Point{
+		(line.start.x + line.end.x) * 0.5f,
+		(line.start.y + line.end.y) * 0.5f
+	};
+}
+
+Point getMidPoint(const Point& a, const Point& b)
+{
+	return Point{
+		(a.x + b.x) * 0.5f,
+		(a.y + b.y) * 0.5f
+	};
 }

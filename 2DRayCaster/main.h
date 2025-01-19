@@ -26,3 +26,4 @@ void render();
 void initializeWalls();
 void getInputs();
 void displayRays(bool draw, Point hitPoint, Ray ray, float closestDistance);
+void drawWallNormals();

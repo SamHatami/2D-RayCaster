@@ -14,6 +14,7 @@ public:
 
 	void castRays(const std::vector<Point> points = {}) override;
 	void updateBoundary();
+	float getMaxRayLength();
 	float getAngularDirection() const;
 	float getRadius();
 	std::vector<Point> getBoundaryPoints();

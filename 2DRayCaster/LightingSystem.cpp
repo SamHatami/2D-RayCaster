@@ -1,4 +1,7 @@
 #include "LightingSystem.h"
+
+#include <iostream>
+
 #include "DirectionalLight.h"
 
 
@@ -11,7 +14,7 @@ void LightingSystem::updatePointLight(PointLight& light, const std::vector<Wall>
 	for (int i = 0; i < light.getCurrentResolution(); i++)
 	{
 		// Initialize variables to track the closest hit for the current ray
-		float closestHitDistance = RayCaster::MAX_RAY_LENGTH;
+		float closestHitDistance = light.getMaxRayLength();
 		Point closestHitPoint;
 
 		// Loop through all walls and check for intersections
@@ -41,30 +44,38 @@ void LightingSystem::updatePointLight(PointLight& light, const std::vector<Wall>
 	}
 }
 
-void LightingSystem::updateDirectionalLight(DirectionalLight& directional, const std::vector<Wall> walls)
+void LightingSystem::updateDirectionalLight(DirectionalLight& directional, const std::vector<Wall>& walls)
 {
 	std::vector<Point> endPoints;
+	std::vector<Wall> culledWalls;
 
-	for (int i = 0; i<walls.size(); i++) //add all endPoints, then do check for distinct points.
+	for (int i = 4; i < walls.size(); i++) //add all endPoints, except boundary walls , then do check for distinct points.
 	{
+		float dot = vector2::Dot(walls[i].normal, directional.direction);
+		if (dot < 0) //Shadowcasters
+			continue;
+
+		culledWalls.push_back(walls[i]);
 		endPoints.push_back(walls[i].definition.start);
 		endPoints.push_back(walls[i].definition.end);
 	}
 
+	std::cout << "DirectionalLight received " << endPoints.size() << " endpoints\n";
+
 	directional.castRays(endPoints);
 
-	for (auto ray : directional.rays)
+	for (auto& ray : directional.rays)
 	{
-		for(auto wall: walls)
+		for (size_t i = 0; i < culledWalls.size(); i++)
 		{
-			RayHitResult hitResult = RayCaster::check_hit(ray, wall.definition);
+			RayHitResult hitResult = RayCaster::check_hit(ray, walls[i].definition);
 
-			//the ray hits something, and the distance is shorter than the current rayLength is occluded by another wall
-			if(hitResult.hasHit && hitResult.distance < ray.length)
+			if (hitResult.hasHit && hitResult.distance < ray.length)
 			{
-				//pop the ray of the rays list, but you probably cant change a collection size in here.
-			}
+				//ray.active = false;
 
+			}
 		}
+
 	}
 }

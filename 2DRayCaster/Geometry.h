@@ -27,6 +27,7 @@ struct Line
 		: start(start), end(end), color(color)
 	{
 	}
+
 };
 
 struct Circle
@@ -65,3 +66,6 @@ struct BoundingBox
 BoundingBox getBoundingBoxFromTriangle(Point& a, Point& b, Point& c);
 float distanceBetweenPoint(Point& a, Point& b);
 bool pointsAreCoincident(Point& a, Point& b);
+Point getMidPoint(const Line& line);
+
+Point getMidPoint(const Point& a, const Point& b);

@@ -4,7 +4,7 @@ class DirectionalLight :
     public Light
 {
 private:
-	static constexpr float DEFAULT_RAY_LENGTH = 300.0f;
+	static constexpr float DEFAULT_RAY_LENGTH = 8000.0f;
 	int heightBoundary;
 	int widthBoundary;
 	void initalizeRays(int nrOfRays);

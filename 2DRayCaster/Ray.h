@@ -3,9 +3,10 @@
 #include "Vector2.h"
 
 struct RayHitResult {
-	bool hasHit;
-	Point hitPoint;
-	float distance;
+	bool hasHit = false;
+	Point hitPoint = {0,0};
+	float distance = 0.0f;
+
 };
 
 struct Ray {
@@ -16,6 +17,7 @@ struct Ray {
 	uint32_t color;
 	int rayNr;
 	mutable RayHitResult hitResult;
+	bool active = true;
 
 	Ray();
 
