@@ -1,5 +1,5 @@
 #pragma once
-
+#include "Geometry.h"
 #include "Polygon.h"
 
 struct Vertex
@@ -8,7 +8,8 @@ struct Vertex
 	float y;
 	uint32_t color;
 	Polygon* parent;
-	int nr;
+	int internalNr;
+	int globalNr;
 
 	Vertex(float x = 0, float y = 0, uint32_t color = 0xFFFFFFFF, Polygon* parent = nullptr);
 	Point toPoint() const;

@@ -14,10 +14,10 @@ int main(int argc, char* argv[])
 	lightingSystem = LightingSystem();
 	SDL_Window* window = display.InitializeWindow(800, 600); // probably use smart pointer for this?
 	pointLight = PointLight(400, 250, 0xFF0000FF, mousePosition);
-	mainDirectional = DirectionalLight();
+ 	mainDirectional = DirectionalLight();
 	mainDirectional.direction = vector2{ -0.25,0.25 };
 	rays = pointLight.getRays();
-	initializeWalls();
+	initialize_walls();
 
 	lightingSystem.updateDirectionalLight(mainDirectional, walls);
 
@@ -29,7 +29,7 @@ int main(int argc, char* argv[])
 	while (!quit) // listen to esc key event
 	{
 		Uint32 frameStart = SDL_GetTicks();
-		getInputs();
+		get_inputs();
 		update();
 
 		Uint32 frameTime = SDL_GetTicks() - frameStart;
@@ -45,8 +45,19 @@ int main(int argc, char* argv[])
 }
 
 //TODO: Replace with polygons
-void initializeWalls()
+void initialize_walls()
 {
+	//TODO Create Primitives in the Geometry name space
+
+	std::vector<Vertex> corners;
+	corners.emplace_back(50,50); 
+	corners.emplace_back(50,200);
+	corners.emplace_back(100,200);
+	corners.emplace_back(50,200);
+
+	std::vector<Edge> edges;
+
+
 	walls.resize(NR_OF_WALLS);
 	// Window borders (counter-clockwise, normals pointing outward)
 	walls[0] = Wall{ 0, Line(Point(0, 0), Point(799, 0)) };      // Top
@@ -86,7 +97,7 @@ void initializeWalls()
 	walls[24] = Wall{ 0, Line(Point(550, 450), Point(750, 450)) };
 }
 
-void getInputs()
+void get_inputs()
 {
 	while (SDL_PollEvent(&event))
 	{
@@ -125,9 +136,9 @@ void getInputs()
 	}
 }
 
-void drawWallNormals()
+void draw_wall_normals()
 {
-	for (Wall wall : walls)
+	for (const Wall& wall : walls)
 	{
 		int normalLength = 10;
 		Point normalStart = getMidPoint(wall.definition);
@@ -210,13 +221,13 @@ void render()
 		display.drawLine(wall.definition, 0xFFFFFFFF);
 	}
 
-	for (auto ray : mainDirectional.getRays())
+	for (const auto& ray : mainDirectional.getRays())
 	{
 		if (ray.active)
 			display.drawLine(Line{ ray.start,ray.end }, 0xFFFF00FF);
 	}
 
-	drawWallNormals();
+	draw_wall_normals();
 
 	display.render();
 }

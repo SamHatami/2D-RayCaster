@@ -3,6 +3,7 @@
 #include "PointLight.h"
 #include "RayCaster.h"
 #include "LightingSystem.h"
+#include "Polygon.h"
 
 
 bool quit = false;
@@ -12,6 +13,7 @@ Point mousePosition;
 constexpr int NR_OF_WALLS = 25;
 std::vector<Wall> walls;
 std::vector<Ray> rays;
+std::vector<Polygon> world_polygons;
 SDL_Event event;
 PointLight pointLight;
 DirectionalLight mainDirectional;
@@ -21,9 +23,7 @@ bool showLightBoundary;
 
 int main(int argc, char* argv[]);
 void update();
-void calculateRayHits();
 void render();
-void initializeWalls();
-void getInputs();
-void displayRays(bool draw, Point hitPoint, Ray ray, float closestDistance);
-void drawWallNormals();
+void initialize_walls();
+void get_inputs();
+void draw_wall_normals();
