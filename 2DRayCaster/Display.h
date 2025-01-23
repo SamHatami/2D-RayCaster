@@ -4,6 +4,7 @@
 #include "Geometry.h"
 #include "Light.h"
 #include "PointLight.h"
+#include "Polygon.h"
 #include "Ray.h"
 
 class Display
@@ -20,6 +21,7 @@ public:
 	void drawLine(Line line, uint32_t color);
 	void drawLightBoundary(PointLight& light);
 	void drawLight(Light& light);
+	void drawPolygon(Polygon& polygon);
 	void rasterizeTriangle(Point& pointA, Point& pointB, Point& pointC, BoundingBox& boundingBox, uint32_t color, Light& light, Point& centerPoint, float
 	                       lightIntensity);
 	// Gets the window dimensions, returns (width, height) in pixels

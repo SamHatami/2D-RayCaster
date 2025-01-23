@@ -2,6 +2,7 @@
 #include <vector>
 #include "Geometry.h"
 #include "Edge.h"
+#include "Shadow.h"
 #include "Vertex.h"
 
 struct Point;
@@ -16,10 +17,16 @@ private:
 	BoundingBox boundingBox;
 	Point centerPoint; //local?
 	Point position; //Global
+	Shadow shadow;
+	void CreateBoundingBox();
 
+	//for simplicity vertices are in global coordinates
 public:
-	Polygon(std::vector<Vertex>& vertices, std::vector<Edge>& edges, BoundingBox& boundingBox,
-		Point& centerPoint, Point& position);	
+	Polygon(std::vector<Vertex>& vertices, std::vector<Edge>& edges);
+	const Vertex& get_vertex_at_index(size_t vertexNr);
+	const std::vector<Edge>& get_all_edges() const;
 
-	std::vector<Vertex&> getBoundaryPoints();
+	std::pair<const Vertex&, const Vertex&> get_edge_vertices(const Edge& edge) const;
+
+	void set_shadow(const Shadow& shadow);
 };

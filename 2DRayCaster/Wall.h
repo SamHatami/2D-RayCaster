@@ -2,7 +2,7 @@
 #include "Geometry.h"
 #include "Vector2.h"
 
-struct Wall
+struct Wall //Temporary struct for polygons
 {
 	int height;
 	Line definition;

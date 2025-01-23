@@ -230,6 +230,8 @@ void Display::drawLight(Light& light)
 	{
 		auto& dirLight = dynamic_cast<DirectionalLight&>(light);
 
+
+
 		break;
 	}
 	default:
@@ -237,8 +239,12 @@ void Display::drawLight(Light& light)
 	}
 }
 
+void Display::drawPolygon(Polygon& polygon)
+{
+}
+
 void Display::rasterizeTriangle(Point& pointA, Point& pointB, Point& pointC, BoundingBox& boundingBox, uint32_t color,
-	Light& light, Point& centerPoint, float lightIntensity)
+                                Light& light, Point& centerPoint, float lightIntensity)
 {
 	bool setPixelColor = false;
 

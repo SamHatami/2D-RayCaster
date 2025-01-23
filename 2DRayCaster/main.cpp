@@ -14,14 +14,12 @@ int main(int argc, char* argv[])
 	lightingSystem = LightingSystem();
 	SDL_Window* window = display.InitializeWindow(800, 600); // probably use smart pointer for this?
 	pointLight = PointLight(400, 250, 0xFF0000FF, mousePosition);
- 	mainDirectional = DirectionalLight();
+	mainDirectional = DirectionalLight();
 	mainDirectional.direction = vector2{ -0.25,0.25 };
 	rays = pointLight.getRays();
-	initialize_walls();
+	initialize_world_polygons();
 
 	lightingSystem.updateDirectionalLight(mainDirectional, walls);
-
-
 
 	const int targetFPS = 32;
 	const int frameDelay = 1000 / targetFPS;
@@ -44,57 +42,148 @@ int main(int argc, char* argv[])
 	return 0;
 }
 
-//TODO: Replace with polygons
-void initialize_walls()
+//TODO: Replace with polygons and initialize from a PolygonCreator and SceneManager
+void initialize_world_polygons()
 {
-	//TODO Create Primitives in the Geometry name space
+	//TODO Create Primitives in a PolygonCreator
 
 	std::vector<Vertex> corners;
-	corners.emplace_back(50,50); 
-	corners.emplace_back(50,200);
-	corners.emplace_back(100,200);
-	corners.emplace_back(50,200);
-
 	std::vector<Edge> edges;
 
+	// Rectangle
+	corners = {
+		{50, 50},
+		{50, 200},
+		{100, 200},
+		{100, 50}
+	};
+	edges = {
+		{0, 1, false},
+		{1, 2, false},
+		{2, 3, false},
+		{3, 0, false}
+	};
+	Polygon rect = Polygon(corners, edges);
+	world_polygons.emplace_back(rect);
 
-	walls.resize(NR_OF_WALLS);
-	// Window borders (counter-clockwise, normals pointing outward)
-	walls[0] = Wall{ 0, Line(Point(0, 0), Point(799, 0)) };      // Top
-	walls[1] = Wall{ 0, Line(Point(799, 0), Point(799, 599)) };  // Right
-	walls[2] = Wall{ 0, Line(Point(799, 599), Point(0, 599)) };  // Bottom
-	walls[3] = Wall{ 0, Line(Point(0, 599), Point(0, 0)) };      // Left
+	// Triangle
+	corners = {
+		{200, 200},
+		{300, 200},
+		{250, 100}
+	};
+	edges = {
+		{0, 1, false},
+		{1, 2, false},
+		{2, 0, false}
+	};
+	Polygon triangle = Polygon(corners, edges);
+	world_polygons.emplace_back(triangle);
 
-	// Rectangle (counter-clockwise)
-	walls[4] = Wall{ 0, Line(Point(50, 50), Point(50, 100)) };     // Left
-	walls[5] = Wall{ 0, Line(Point(50, 100), Point(150, 100)) };   // Bottom
-	walls[6] = Wall{ 0, Line(Point(150, 100), Point(150, 50)) };   // Right
-	walls[7] = Wall{ 0, Line(Point(150, 50), Point(50, 50)) };     // Top
+	// Hexagon
+	corners = {
+		{400, 300},
+		{375, 350},
+		{400, 400},
+		{450, 400},
+		{475, 350},
+		{450, 300}
+	};
+	edges = {
+		{0, 1, false},
+		{1, 2, false},
+		{2, 3, false},
+		{3, 4, false},
+		{4, 5, false},
+		{5, 0, false}
+	};
+	Polygon hexagon = Polygon(corners, edges);
+	world_polygons.emplace_back(hexagon);
 
-	// Triangle (counter-clockwise)
-	walls[8] = Wall{ 0, Line(Point(200, 200), Point(300, 200)) };  // Bottom
-	walls[9] = Wall{ 0, Line(Point(300, 200), Point(250, 100)) };  // Right side
-	walls[10] = Wall{ 0, Line(Point(250, 100), Point(200, 200)) }; // Left side
+	// Hexagon with a hole
+	corners = {
+		// Outer hexagon
+		{600, 300},
+		{575, 350},
+		{600, 400},
+		{650, 400},
+		{675, 350},
+		{650, 300},
+		// Inner hexagon (hole)
+		{625, 325},
+		{600, 350},
+		{625, 375},
+		{650, 375},
+		{675, 350},
+		{650, 325}
+	};
+	edges = {
+		// Outer hexagon
+		{0, 1, false},
+		{1, 2, false},
+		{2, 3, false},
+		{3, 4, false},
+		{4, 5, false},
+		{5, 0, false},
+		// Inner hexagon (hole)
+		{6, 7, true},
+		{7, 8, true},
+		{8, 9, true},
+		{9, 10, true},
+		{10, 11, true},
+		{11, 6, true}
+	};
+	Polygon hexagonWithHole = Polygon(corners, edges);
+	world_polygons.emplace_back(hexagonWithHole);
 
-	// Hexagon (counter-clockwise)
-	walls[11] = Wall{ 0, Line(Point(400, 300), Point(375, 350)) };   // Upper left
-	walls[12] = Wall{ 0, Line(Point(375, 350), Point(400, 400)) };   // Lower left
-	walls[13] = Wall{ 0, Line(Point(400, 400), Point(450, 400)) };   // Bottom
-	walls[14] = Wall{ 0, Line(Point(450, 400), Point(475, 350)) };   // Lower right
-	walls[15] = Wall{ 0, Line(Point(475, 350), Point(450, 300)) };   // Upper right
-	walls[16] = Wall{ 0, Line(Point(450, 300), Point(400, 300)) };   // Top
+	// Zigzag wall (enclosed)
+	corners = {
+		{500, 100},
+		{550, 150},
+		{500, 200},
+		{550, 250},
+		{500, 300},
+		{450, 250},
+		{500, 200},
+		{450, 150}
+	};
+	edges = {
+		{0, 1, false},
+		{1, 2, false},
+		{2, 3, false},
+		{3, 4, false},
+		{4, 5, false},
+		{5, 6, false},
+		{6, 7, false},
+		{7, 0, false}
+	};
+	Polygon zigzag = Polygon(corners, edges);
+	world_polygons.emplace_back(zigzag);
 
-	// Zigzag wall (not an enclosed shape, but maintaining consistent direction top to bottom)
-	walls[17] = Wall{ 0, Line(Point(500, 100), Point(550, 150)) };
-	walls[18] = Wall{ 0, Line(Point(550, 150), Point(500, 200)) };
-	walls[19] = Wall{ 0, Line(Point(500, 200), Point(550, 250)) };
-	walls[20] = Wall{ 0, Line(Point(550, 250), Point(500, 300)) };
+	// Star/cross (enclosed)
+	corners = {
+		{600, 400},
+		{700, 500},
+		{700, 400},
+		{600, 500},
+		{650, 350},
+		{650, 550},
+		{550, 450},
+		{750, 450}
+	};
+	edges = {
+		{0, 1, false},
+		{1, 2, false},
+		{2, 3, false},
+		{3, 0, false},
+		{4, 5, false},
+		{5, 6, false},
+		{6, 7, false},
+		{7, 4, false}
+	};
+	Polygon star = Polygon(corners, edges);
+	world_polygons.emplace_back(star);
 
-	// Star/cross (keeping original since it's not an enclosed shape)
-	walls[21] = Wall{ 0, Line(Point(600, 400), Point(700, 500)) };
-	walls[22] = Wall{ 0, Line(Point(700, 400), Point(600, 500)) };
-	walls[23] = Wall{ 0, Line(Point(650, 350), Point(650, 550)) };
-	walls[24] = Wall{ 0, Line(Point(550, 450), Point(750, 450)) };
 }
 
 void get_inputs()
@@ -110,7 +199,7 @@ void get_inputs()
 			pointLight.decreaseIntensity();
 		}
 
-		if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RIGHT )
+		if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RIGHT)
 		{
 			pointLight.increaseIntensity();
 		}
@@ -124,7 +213,6 @@ void get_inputs()
 		{
 			showLightBoundary = !showLightBoundary;
 		}
-
 
 		else if (event.type == SDL_MOUSEMOTION)
 		{
@@ -146,16 +234,15 @@ void draw_wall_normals()
 			wall.normal.x * normalLength + normalStart.x,
 			wall.normal.y * normalLength + normalStart.y
 		};
-		display.drawLine(Line{normalStart,normalEnd}, 0xFF00FFFF);
+		display.drawLine(Line{ normalStart,normalEnd }, 0xFF00FFFF);
 	}
 }
 
 void update()
 {
-
 	pointLight.setPosition(mousePosition);
 	pointLight.updateBoundary();
-	lightingSystem.updatePointLight(pointLight, walls);
+	lightingSystem.updatePointLight(pointLight, world_polygons);
 
 	std::vector<Ray> rays = mainDirectional.getRays();
 
@@ -169,7 +256,7 @@ void displayRays()
 
 	rays = pointLight.getRays();
 
-	for (int i = 0; i< pointLight.getCurrentResolution(); i++)
+	for (int i = 0; i < pointLight.getCurrentResolution(); i++)
 	{
 		float closestDistance = 0.0f;
 		if (rays[i].hitResult.hasHit)
@@ -197,7 +284,6 @@ void displayRays()
 		// Draw the ray start point
 		//display.drawCircle(ray.start.x, ray.start.y, 3, 0xFF00FF00, false);
 	}
-
 }
 
 void render()
@@ -209,17 +295,19 @@ void render()
 
 	display.drawLight(mainDirectional);
 
-
 	display.drawLight(pointLight);
 
+	for (Polygon& world_polygon : world_polygons)
+	{
+		display.drawPolygon(world_polygon);
+		//draw_wall_normals(); //Replace with option to show wall 
+
+
+	}
 
 	if (showRays)
 		displayRays();
 
-	for (const auto& wall : walls)
-	{
-		display.drawLine(wall.definition, 0xFFFFFFFF);
-	}
 
 	for (const auto& ray : mainDirectional.getRays())
 	{
@@ -227,8 +315,6 @@ void render()
 			display.drawLine(Line{ ray.start,ray.end }, 0xFFFF00FF);
 	}
 
-	draw_wall_normals();
 
 	display.render();
 }
-

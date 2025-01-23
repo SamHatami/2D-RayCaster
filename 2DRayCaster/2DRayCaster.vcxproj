@@ -151,6 +151,7 @@
     <ClCompile Include="Polygon.cpp" />
     <ClCompile Include="Ray.cpp" />
     <ClCompile Include="RayCaster.cpp" />
+    <ClCompile Include="Shadow.cpp" />
     <ClCompile Include="Vector2.cpp" />
     <ClCompile Include="Vertex.cpp" />
     <ClCompile Include="Wall.cpp" />
@@ -167,6 +168,7 @@
     <ClInclude Include="Polygon.h" />
     <ClInclude Include="Ray.h" />
     <ClInclude Include="RayCaster.h" />
+    <ClInclude Include="Shadow.h" />
     <ClInclude Include="Vector2.h" />
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="Wall.h" />

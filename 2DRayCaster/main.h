@@ -24,6 +24,6 @@ bool showLightBoundary;
 int main(int argc, char* argv[]);
 void update();
 void render();
-void initialize_walls();
+void initialize_world_polygons();
 void get_inputs();
 void draw_wall_normals();
