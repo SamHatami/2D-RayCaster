@@ -123,8 +123,6 @@ Shadow LightingSystem::createShadow(DirectionalLight& directional, const std::ve
 
 void LightingSystem::updateDirectionalLight(DirectionalLight& directional, const std::vector<Polygon>& polygons)
 {
-	std::vector<Point> endPoints;
-	std::vector<Polygon> culledPolygons;
 
 	for (auto polygon : polygons)
 	{

@@ -2,6 +2,7 @@
 #include "Geometry.h"
 #include "Polygon.h"
 
+class Polygon;
 
 struct Vertex
 {

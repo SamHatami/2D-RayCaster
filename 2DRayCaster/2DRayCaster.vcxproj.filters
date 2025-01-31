@@ -54,7 +54,7 @@
     <ClCompile Include="Vertex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="EDge.cpp">
+    <ClCompile Include="Edge.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Shadow.cpp">

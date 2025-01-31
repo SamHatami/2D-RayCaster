@@ -81,6 +81,11 @@ void DirectionalLight::castRays(const std::vector<Point> endPoints)
 
 }
 
+bool DirectionalLight::isActive() const
+{
+	return active;
+}
+
 //Kept for notes: If the scene was to be flooded with rays to:
 //for (int i = 0; i < rays.size(); i++)
 //{

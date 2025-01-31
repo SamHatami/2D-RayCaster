@@ -45,146 +45,161 @@ int main(int argc, char* argv[])
 //TODO: Replace with polygons and initialize from a PolygonCreator and SceneManager
 void initialize_world_polygons()
 {
-	//TODO Create Primitives in a PolygonCreator
+    //TODO Create Primitives in a PolygonCreator
 
-	std::vector<Vertex> corners;
-	std::vector<Edge> edges;
+    std::vector<Vertex> corners = {};
+    std::vector<Edge> edges = {};
 
-	// Rectangle
-	corners = {
-		{50, 50},
-		{50, 200},
-		{100, 200},
-		{100, 50}
-	};
-	edges = {
-		{0, 1, false},
-		{1, 2, false},
-		{2, 3, false},
-		{3, 0, false}
-	};
-	Polygon rect = Polygon(corners, edges);
-	world_polygons.emplace_back(rect);
+    // Rectangle
+    Polygon rect;
+    corners = {
+        {50, 50, 0xFFFFFFFF, &rect},
+        {50, 200, 0xFFFFFFFF, &rect},
+        {100, 200, 0xFFFFFFFF, &rect},
+        {100, 50, 0xFFFFFFFF, &rect}
+    };
 
-	// Triangle
-	corners = {
-		{200, 200},
-		{300, 200},
-		{250, 100}
-	};
-	edges = {
-		{0, 1, false},
-		{1, 2, false},
-		{2, 0, false}
-	};
-	Polygon triangle = Polygon(corners, edges);
-	world_polygons.emplace_back(triangle);
+    rect.set_vertices(corners);
 
-	// Hexagon
-	corners = {
-		{400, 300},
-		{375, 350},
-		{400, 400},
-		{450, 400},
-		{475, 350},
-		{450, 300}
-	};
-	edges = {
-		{0, 1, false},
-		{1, 2, false},
-		{2, 3, false},
-		{3, 4, false},
-		{4, 5, false},
-		{5, 0, false}
-	};
-	Polygon hexagon = Polygon(corners, edges);
-	world_polygons.emplace_back(hexagon);
+    edges = {
+        {0, 1, false, &rect},
+        {1, 2, false, &rect},
+        {2, 3, false, &rect},
+        {3, 0, false, &rect}
+    };
 
-	// Hexagon with a hole
-	corners = {
-		// Outer hexagon
-		{600, 300},
-		{575, 350},
-		{600, 400},
-		{650, 400},
-		{675, 350},
-		{650, 300},
-		// Inner hexagon (hole)
-		{625, 325},
-		{600, 350},
-		{625, 375},
-		{650, 375},
-		{675, 350},
-		{650, 325}
-	};
-	edges = {
-		// Outer hexagon
-		{0, 1, false},
-		{1, 2, false},
-		{2, 3, false},
-		{3, 4, false},
-		{4, 5, false},
-		{5, 0, false},
-		// Inner hexagon (hole)
-		{6, 7, true},
-		{7, 8, true},
-		{8, 9, true},
-		{9, 10, true},
-		{10, 11, true},
-		{11, 6, true}
-	};
-	Polygon hexagonWithHole = Polygon(corners, edges);
-	world_polygons.emplace_back(hexagonWithHole);
+	rect.set_edges(edges);
+    world_polygons.emplace_back(rect);
 
-	// Zigzag wall (enclosed)
-	corners = {
-		{500, 100},
-		{550, 150},
-		{500, 200},
-		{550, 250},
-		{500, 300},
-		{450, 250},
-		{500, 200},
-		{450, 150}
-	};
-	edges = {
-		{0, 1, false},
-		{1, 2, false},
-		{2, 3, false},
-		{3, 4, false},
-		{4, 5, false},
-		{5, 6, false},
-		{6, 7, false},
-		{7, 0, false}
-	};
-	Polygon zigzag = Polygon(corners, edges);
-	world_polygons.emplace_back(zigzag);
+    // Triangle
+    Polygon triangle;
+    corners = {
+        {200, 200, 0xFFFFFFFF, &triangle},
+        {300, 200, 0xFFFFFFFF, &triangle},
+        {250, 100, 0xFFFFFFFF, &triangle}
+    };
+	triangle.set_vertices(corners);
+    edges = {
+        {0, 1, false, &triangle},
+        {1, 2, false, &triangle},
+        {2, 0, false, &triangle}
+    };
+	triangle.set_edges(edges);
+    world_polygons.emplace_back(triangle);
 
-	// Star/cross (enclosed)
-	corners = {
-		{600, 400},
-		{700, 500},
-		{700, 400},
-		{600, 500},
-		{650, 350},
-		{650, 550},
-		{550, 450},
-		{750, 450}
-	};
-	edges = {
-		{0, 1, false},
-		{1, 2, false},
-		{2, 3, false},
-		{3, 0, false},
-		{4, 5, false},
-		{5, 6, false},
-		{6, 7, false},
-		{7, 4, false}
-	};
-	Polygon star = Polygon(corners, edges);
-	world_polygons.emplace_back(star);
+    // Hexagon
+    Polygon hexagon;
+    corners = {
+        {400, 300, 0xFFFFFFFF, &hexagon},
+        {375, 350, 0xFFFFFFFF, &hexagon},
+        {400, 400, 0xFFFFFFFF, &hexagon},
+        {450, 400, 0xFFFFFFFF, &hexagon},
+        {475, 350, 0xFFFFFFFF, &hexagon},
+        {450, 300, 0xFFFFFFFF, &hexagon}
+    };
+	hexagon.set_vertices(corners);
+    edges = {
+        {0, 1, false, &hexagon},
+        {1, 2, false, &hexagon},
+        {2, 3, false, &hexagon},
+        {3, 4, false, &hexagon},
+        {4, 5, false, &hexagon},
+        {5, 0, false, &hexagon}
+    };
+	hexagon.set_edges(edges);
+    world_polygons.emplace_back(hexagon);
 
+    // Hexagon with a hole
+    Polygon hexagonWithHole;
+    corners = {
+        // Outer hexagon
+        {600, 300, 0xFFFFFFFF, &hexagonWithHole},
+        {575, 350, 0xFFFFFFFF, &hexagonWithHole},
+        {600, 400, 0xFFFFFFFF, &hexagonWithHole},
+        {650, 400, 0xFFFFFFFF, &hexagonWithHole},
+        {675, 350, 0xFFFFFFFF, &hexagonWithHole},
+        {650, 300, 0xFFFFFFFF, &hexagonWithHole},
+        // Inner hexagon (hole)
+        {625, 325, 0xFFFFFFFF, &hexagonWithHole},
+        {600, 350, 0xFFFFFFFF, &hexagonWithHole},
+        {625, 375, 0xFFFFFFFF, &hexagonWithHole},
+        {650, 375, 0xFFFFFFFF, &hexagonWithHole},
+        {675, 350, 0xFFFFFFFF, &hexagonWithHole},
+        {650, 325, 0xFFFFFFFF, &hexagonWithHole}
+    };
+	hexagonWithHole.set_vertices(corners);
+    edges = {
+        // Outer hexagon
+        {0, 1, false, &hexagonWithHole},
+        {1, 2, false, &hexagonWithHole},
+        {2, 3, false, &hexagonWithHole},
+        {3, 4, false, &hexagonWithHole},
+        {4, 5, false, &hexagonWithHole},
+        {5, 0, false, &hexagonWithHole},
+        // Inner hexagon (hole)
+        {6, 7, true, &hexagonWithHole},
+        {7, 8, true, &hexagonWithHole},
+        {8, 9, true, &hexagonWithHole},
+        {9, 10, true, &hexagonWithHole},
+        {10, 11, true, &hexagonWithHole},
+        {11, 6, true, &hexagonWithHole}
+    };
+	hexagonWithHole.set_edges(edges);
+    world_polygons.emplace_back(hexagonWithHole);
+
+    // Zigzag wall (enclosed)
+    Polygon zigzag;
+    corners = {
+        {500, 100, 0xFFFFFFFF, &zigzag},
+        {550, 150, 0xFFFFFFFF, &zigzag},
+        {500, 200, 0xFFFFFFFF, &zigzag},
+        {550, 250, 0xFFFFFFFF, &zigzag},
+        {500, 300, 0xFFFFFFFF, &zigzag},
+        {450, 250, 0xFFFFFFFF, &zigzag},
+        {500, 200, 0xFFFFFFFF, &zigzag},
+        {450, 150, 0xFFFFFFFF, &zigzag}
+    };
+	zigzag.set_vertices(corners);
+    edges = {
+        {0, 1, false, &zigzag},
+        {1, 2, false, &zigzag},
+        {2, 3, false, &zigzag},
+        {3, 4, false, &zigzag},
+        {4, 5, false, &zigzag},
+        {5, 6, false, &zigzag},
+        {6, 7, false, &zigzag},
+        {7, 0, false, &zigzag}
+    };
+	zigzag.set_edges(edges);
+    world_polygons.emplace_back(zigzag);
+
+    // Star/cross (enclosed)
+    Polygon star;
+    corners = {
+        {600, 400, 0xFFFFFFFF, &star},
+        {700, 500, 0xFFFFFFFF, &star},
+        {700, 400, 0xFFFFFFFF, &star},
+        {600, 500, 0xFFFFFFFF, &star},
+        {650, 350, 0xFFFFFFFF, &star},
+        {650, 550, 0xFFFFFFFF, &star},
+        {550, 450, 0xFFFFFFFF, &star},
+        {750, 450, 0xFFFFFFFF, &star}
+    };
+	star.set_vertices(corners);
+    edges = {
+        {0, 1, false, &star},
+        {1, 2, false, &star},
+        {2, 3, false, &star},
+        {3, 0, false, &star},
+        {4, 5, false, &star},
+        {5, 6, false, &star},
+        {6, 7, false, &star},
+        {7, 4, false, &star}
+    };
+	star.set_edges(edges);
+    world_polygons.emplace_back(star);
 }
+
 
 void get_inputs()
 {
@@ -289,6 +304,9 @@ void displayRays()
 void render()
 {
 	display.clearFrameBuffer(0x00000000);
+
+    if (mainDirectional.isActive())
+        display.drawLight(mainDirectional);
 
 	if (showLightBoundary)
 		display.drawLightBoundary(pointLight);

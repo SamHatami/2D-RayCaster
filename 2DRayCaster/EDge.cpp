@@ -1,4 +1,4 @@
-#include "EDge.h"
+#include "Edge.h"
 
 Edge::Edge(size_t v1, size_t v2, bool isInternal, Polygon* parent)
     : v1(v1)
@@ -11,7 +11,8 @@ Edge::Edge(size_t v1, size_t v2, bool isInternal, Polygon* parent)
 	normal = vector2::GetNormal(tempVector);
 }
 
-Line Edge::toLine()
+Line Edge::toLine() const
 {
 	return Line{ parent->get_vertex_at_index(v1).toPoint(), parent->get_vertex_at_index(v2).toPoint() };
 }
+

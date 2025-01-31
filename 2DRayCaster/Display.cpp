@@ -158,6 +158,14 @@ void Display::drawCircle(int pos_x, int pos_y, int radius, uint32_t color, bool 
 	}
 }
 
+void Display::fillScene(uint32_t color)
+{
+	for (int i = 0; i < window_width * window_height; i++)
+	{
+		frameBuffer[i] = color;
+	}
+}	
+
 //Bresenham's line algorithm
 void Display::drawLine(Line line, uint32_t color)
 {
@@ -230,6 +238,9 @@ void Display::drawLight(Light& light)
 	{
 		auto& dirLight = dynamic_cast<DirectionalLight&>(light);
 
+		uint32_t brightGray = 0xFFC0C0C0;
+
+		fillScene(brightGray);
 
 
 		break;
@@ -241,6 +252,12 @@ void Display::drawLight(Light& light)
 
 void Display::drawPolygon(Polygon& polygon)
 {
+
+}
+
+void Display::drawCastShadows(Shadow& shadow)
+{
+
 }
 
 void Display::rasterizeTriangle(Point& pointA, Point& pointB, Point& pointC, BoundingBox& boundingBox, uint32_t color,
