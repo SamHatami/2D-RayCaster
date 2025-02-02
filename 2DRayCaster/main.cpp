@@ -19,7 +19,7 @@ int main(int argc, char* argv[])
 	rays = pointLight.getRays();
 	initialize_world_polygons();
 
-	lightingSystem.updateDirectionalLight(mainDirectional, walls);
+	//lightingSystem.updateDirectionalLight(mainDirectional, walls);
 
 	const int targetFPS = 32;
 	const int frameDelay = 1000 / targetFPS;
@@ -259,7 +259,7 @@ void update()
 	pointLight.updateBoundary();
 	lightingSystem.updatePointLight(pointLight, world_polygons);
 
-	std::vector<Ray> rays = mainDirectional.getRays();
+	//std::vector<Ray> rays = mainDirectional.getRays();
 
 	//calculateRayHits();
 	render();
@@ -305,13 +305,13 @@ void render()
 {
 	display.clearFrameBuffer(0x00000000);
 
-    if (mainDirectional.isActive())
-        display.drawLight(mainDirectional);
+    //if (mainDirectional.isActive())
+    //    display.drawLight(mainDirectional);
 
 	if (showLightBoundary)
 		display.drawLightBoundary(pointLight);
 
-	display.drawLight(mainDirectional);
+	//display.drawLight(mainDirectional);
 
 	display.drawLight(pointLight);
 
