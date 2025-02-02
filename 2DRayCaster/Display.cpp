@@ -228,7 +228,7 @@ void Display::drawLight(Light& light)
 			if (boundingBox.minX >= boundingBox.maxX || boundingBox.minY >= boundingBox.maxY)
 				continue;
 
-			rasterizeTriangle(pointA, pointB, pointLight.getPosition(), boundingBox,
+			rasterizeLightTriangle(pointA, pointB, pointLight.getPosition(), boundingBox,
 				pointLight.getColor(), pointLight, pointLight.getPosition(), pointLight.getIntensity());
 		}
 			break;
@@ -258,9 +258,65 @@ void Display::drawPolygon(Polygon& polygon)
 void Display::drawCastShadows(Shadow& shadow)
 {
 
+	if (shadow.boundary_points.size() < 3)
+		return;
+
+	for (int i = 0; i < shadow.boundary_points.size(); i++)
+	{
+		Point& pointA = shadow.boundary_points[i];
+		Point& pointB = shadow.boundary_points[(i + 1) % shadow.boundary_points.size()];
+		Point& pointC = shadow.boundary_points[(i + 2) % shadow.boundary_points.size()];
+
+		if (pointsAreCoincident(pointA, pointB))
+			continue;
+
+		BoundingBox boundingBox = getBoundingBoxFromTriangle(pointA, pointB,
+			pointC);
+
+		if (boundingBox.minX >= boundingBox.maxX || boundingBox.minY >= boundingBox.maxY)
+			continue;
+
+		rasterizeShadowTriangle(pointA, pointB, pointC, boundingBox);
+	}
+
 }
 
-void Display::rasterizeTriangle(Point& pointA, Point& pointB, Point& pointC, BoundingBox& boundingBox, uint32_t color,
+void Display::rasterizeShadowTriangle(Point& pointA, Point& pointB, Point& pointC, BoundingBox& boundingBox)
+{
+	bool setPixelColor = false;
+
+	//TODO: You really need to figure out this int / float thing. Point positions on screen cant be float!
+	for (int i = boundingBox.minX; i < boundingBox.maxX; i++)
+	{
+		for (int j = boundingBox.minY; j < boundingBox.maxY; j++)
+		{
+			auto pixelPosition = Point{ static_cast<float>(i), static_cast<float>(j) };
+
+			float w0 = baryCentricCoordinates(pointB, pointC, pixelPosition);
+			float w1 = baryCentricCoordinates(pointC, pointA, pixelPosition);
+			float w2 = baryCentricCoordinates(pointA, pointB, pixelPosition);
+
+			if (w0 >= 0 && w1 >= 0 && w2 >= 0)
+			{
+				float intensity = 0.5f;
+
+				uint8_t red = static_cast<uint8_t>(1 * intensity); // Less red
+				uint8_t green = static_cast<uint8_t>(1 * intensity); // More green
+				uint8_t blue = static_cast<uint8_t>(1 * intensity); // Full blue
+				uint8_t alpha = static_cast<uint8_t>(255 * intensity); // Slightly transparent
+
+				// Calculate the color of the pixel
+				uint32_t pixelColor = (red << 24) | (green << 16) | (blue << 8) | alpha;
+
+				// Draw the pixel
+				drawPixel(pixelPosition.x, pixelPosition.y, pixelColor);
+			}
+		}
+	}
+}
+
+
+void Display::rasterizeLightTriangle(Point& pointA, Point& pointB, Point& pointC, BoundingBox& boundingBox, uint32_t color,
                                 Light& light, Point& centerPoint, float lightIntensity)
 {
 	bool setPixelColor = false;

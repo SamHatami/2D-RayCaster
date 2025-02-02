@@ -19,7 +19,7 @@ int main(int argc, char* argv[])
 	rays = pointLight.getRays();
 	initialize_world_polygons();
 
-	lightingSystem.updateDirectionalLight(mainDirectional, walls);
+	//lightingSystem.updateDirectionalLight(mainDirectional, walls);
 
 	const int targetFPS = 32;
 	const int frameDelay = 1000 / targetFPS;
@@ -45,160 +45,154 @@ int main(int argc, char* argv[])
 //TODO: Replace with polygons and initialize from a PolygonCreator and SceneManager
 void initialize_world_polygons()
 {
-    //TODO Create Primitives in a PolygonCreator
-
-    std::vector<Vertex> corners = {};
-    std::vector<Edge> edges = {};
-
     // Rectangle
-    Polygon rect;
-    corners = {
-        {50, 50, 0xFFFFFFFF, &rect},
-        {50, 200, 0xFFFFFFFF, &rect},
-        {100, 200, 0xFFFFFFFF, &rect},
-        {100, 50, 0xFFFFFFFF, &rect}
+    std::vector<Vertex> rect_corners = {
+        {50, 50, 0xFFFFFFFF},
+        {50, 200, 0xFFFFFFFF},
+        {100, 200, 0xFFFFFFFF},
+        {100, 50, 0xFFFFFFFF}
     };
 
-    rect.set_vertices(corners);
-
-    edges = {
-        {0, 1, false, &rect},
-        {1, 2, false, &rect},
-        {2, 3, false, &rect},
-        {3, 0, false, &rect}
+    std::vector<Edge> rect_edges = {
+        {rect_corners[0], rect_corners[1], false},
+        {rect_corners[1], rect_corners[2], false},
+        {rect_corners[2], rect_corners[3], false},
+        {rect_corners[3], rect_corners[0], false}
     };
 
-	rect.set_edges(edges);
+    Polygon rect(rect_corners, rect_edges);
     world_polygons.emplace_back(rect);
 
     // Triangle
-    Polygon triangle;
-    corners = {
-        {200, 200, 0xFFFFFFFF, &triangle},
-        {300, 200, 0xFFFFFFFF, &triangle},
-        {250, 100, 0xFFFFFFFF, &triangle}
+    std::vector<Vertex> triangle_corners = {
+        {200, 200, 0xFFFFFFFF},
+        {300, 200, 0xFFFFFFFF},
+        {250, 100, 0xFFFFFFFF}
     };
-	triangle.set_vertices(corners);
-    edges = {
-        {0, 1, false, &triangle},
-        {1, 2, false, &triangle},
-        {2, 0, false, &triangle}
+
+    std::vector<Edge> triangle_edges = {
+        {triangle_corners[0], triangle_corners[1], false},
+        {triangle_corners[1], triangle_corners[2], false},
+        {triangle_corners[2], triangle_corners[0], false}
     };
-	triangle.set_edges(edges);
+
+    Polygon triangle(triangle_corners, triangle_edges);
     world_polygons.emplace_back(triangle);
 
     // Hexagon
-    Polygon hexagon;
-    corners = {
-        {400, 300, 0xFFFFFFFF, &hexagon},
-        {375, 350, 0xFFFFFFFF, &hexagon},
-        {400, 400, 0xFFFFFFFF, &hexagon},
-        {450, 400, 0xFFFFFFFF, &hexagon},
-        {475, 350, 0xFFFFFFFF, &hexagon},
-        {450, 300, 0xFFFFFFFF, &hexagon}
+    std::vector<Vertex> hexagon_corners = {
+        {400, 300, 0xFFFFFFFF},
+        {375, 350, 0xFFFFFFFF},
+        {400, 400, 0xFFFFFFFF},
+        {450, 400, 0xFFFFFFFF},
+        {475, 350, 0xFFFFFFFF},
+        {450, 300, 0xFFFFFFFF}
     };
-	hexagon.set_vertices(corners);
-    edges = {
-        {0, 1, false, &hexagon},
-        {1, 2, false, &hexagon},
-        {2, 3, false, &hexagon},
-        {3, 4, false, &hexagon},
-        {4, 5, false, &hexagon},
-        {5, 0, false, &hexagon}
+
+    std::vector<Edge> hexagon_edges = {
+        {hexagon_corners[0], hexagon_corners[1], false},
+        {hexagon_corners[1], hexagon_corners[2], false},
+        {hexagon_corners[2], hexagon_corners[3], false},
+        {hexagon_corners[3], hexagon_corners[4], false},
+        {hexagon_corners[4], hexagon_corners[5], false},
+        {hexagon_corners[5], hexagon_corners[0], false}
     };
-	hexagon.set_edges(edges);
+
+    Polygon hexagon(hexagon_corners, hexagon_edges);
     world_polygons.emplace_back(hexagon);
 
     // Hexagon with a hole
-    Polygon hexagonWithHole;
-    corners = {
+    std::vector<Vertex> hexagonWithHole_corners = {
         // Outer hexagon
-        {600, 300, 0xFFFFFFFF, &hexagonWithHole},
-        {575, 350, 0xFFFFFFFF, &hexagonWithHole},
-        {600, 400, 0xFFFFFFFF, &hexagonWithHole},
-        {650, 400, 0xFFFFFFFF, &hexagonWithHole},
-        {675, 350, 0xFFFFFFFF, &hexagonWithHole},
-        {650, 300, 0xFFFFFFFF, &hexagonWithHole},
+        {600, 300, 0xFFFFFFFF},
+        {575, 350, 0xFFFFFFFF},
+        {600, 400, 0xFFFFFFFF},
+        {650, 400, 0xFFFFFFFF},
+        {675, 350, 0xFFFFFFFF},
+        {650, 300, 0xFFFFFFFF},
         // Inner hexagon (hole)
-        {625, 325, 0xFFFFFFFF, &hexagonWithHole},
-        {600, 350, 0xFFFFFFFF, &hexagonWithHole},
-        {625, 375, 0xFFFFFFFF, &hexagonWithHole},
-        {650, 375, 0xFFFFFFFF, &hexagonWithHole},
-        {675, 350, 0xFFFFFFFF, &hexagonWithHole},
-        {650, 325, 0xFFFFFFFF, &hexagonWithHole}
+        {625, 325, 0xFFFFFFFF},
+        {600, 350, 0xFFFFFFFF},
+        {625, 375, 0xFFFFFFFF},
+        {650, 375, 0xFFFFFFFF},
+        {675, 350, 0xFFFFFFFF},
+        {650, 325, 0xFFFFFFFF}
     };
-	hexagonWithHole.set_vertices(corners);
-    edges = {
+
+    std::vector<Edge> hexagonWithHole_edges = {
         // Outer hexagon
-        {0, 1, false, &hexagonWithHole},
-        {1, 2, false, &hexagonWithHole},
-        {2, 3, false, &hexagonWithHole},
-        {3, 4, false, &hexagonWithHole},
-        {4, 5, false, &hexagonWithHole},
-        {5, 0, false, &hexagonWithHole},
+        {hexagonWithHole_corners[0], hexagonWithHole_corners[1], false},
+        {hexagonWithHole_corners[1], hexagonWithHole_corners[2], false},
+        {hexagonWithHole_corners[2], hexagonWithHole_corners[3], false},
+        {hexagonWithHole_corners[3], hexagonWithHole_corners[4], false},
+        {hexagonWithHole_corners[4], hexagonWithHole_corners[5], false},
+        {hexagonWithHole_corners[5], hexagonWithHole_corners[0], false},
         // Inner hexagon (hole)
-        {6, 7, true, &hexagonWithHole},
-        {7, 8, true, &hexagonWithHole},
-        {8, 9, true, &hexagonWithHole},
-        {9, 10, true, &hexagonWithHole},
-        {10, 11, true, &hexagonWithHole},
-        {11, 6, true, &hexagonWithHole}
+        {hexagonWithHole_corners[6], hexagonWithHole_corners[7], true},
+        {hexagonWithHole_corners[7], hexagonWithHole_corners[8], true},
+        {hexagonWithHole_corners[8], hexagonWithHole_corners[9], true},
+        {hexagonWithHole_corners[9], hexagonWithHole_corners[10], true},
+        {hexagonWithHole_corners[10], hexagonWithHole_corners[11], true},
+        {hexagonWithHole_corners[11], hexagonWithHole_corners[6], true}
     };
-	hexagonWithHole.set_edges(edges);
+
+    Polygon hexagonWithHole(hexagonWithHole_corners, hexagonWithHole_edges);
     world_polygons.emplace_back(hexagonWithHole);
 
     // Zigzag wall (enclosed)
-    Polygon zigzag;
-    corners = {
-        {500, 100, 0xFFFFFFFF, &zigzag},
-        {550, 150, 0xFFFFFFFF, &zigzag},
-        {500, 200, 0xFFFFFFFF, &zigzag},
-        {550, 250, 0xFFFFFFFF, &zigzag},
-        {500, 300, 0xFFFFFFFF, &zigzag},
-        {450, 250, 0xFFFFFFFF, &zigzag},
-        {500, 200, 0xFFFFFFFF, &zigzag},
-        {450, 150, 0xFFFFFFFF, &zigzag}
+    std::vector<Vertex> zigzag_corners = {
+        {500, 100, 0xFFFFFFFF},
+        {550, 150, 0xFFFFFFFF},
+        {500, 200, 0xFFFFFFFF},
+        {550, 250, 0xFFFFFFFF},
+        {500, 300, 0xFFFFFFFF},
+        {450, 250, 0xFFFFFFFF},
+        {500, 200, 0xFFFFFFFF},
+        {450, 150, 0xFFFFFFFF}
     };
-	zigzag.set_vertices(corners);
-    edges = {
-        {0, 1, false, &zigzag},
-        {1, 2, false, &zigzag},
-        {2, 3, false, &zigzag},
-        {3, 4, false, &zigzag},
-        {4, 5, false, &zigzag},
-        {5, 6, false, &zigzag},
-        {6, 7, false, &zigzag},
-        {7, 0, false, &zigzag}
+
+    std::vector<Edge> zigzag_edges = {
+        {zigzag_corners[0], zigzag_corners[1], false},
+        {zigzag_corners[1], zigzag_corners[2], false},
+        {zigzag_corners[2], zigzag_corners[3], false},
+        {zigzag_corners[3], zigzag_corners[4], false},
+        {zigzag_corners[4], zigzag_corners[5], false},
+        {zigzag_corners[5], zigzag_corners[6], false},
+        {zigzag_corners[6], zigzag_corners[7], false},
+        {zigzag_corners[7], zigzag_corners[0], false}
     };
-	zigzag.set_edges(edges);
+
+    Polygon zigzag(zigzag_corners, zigzag_edges);
     world_polygons.emplace_back(zigzag);
 
     // Star/cross (enclosed)
-    Polygon star;
-    corners = {
-        {600, 400, 0xFFFFFFFF, &star},
-        {700, 500, 0xFFFFFFFF, &star},
-        {700, 400, 0xFFFFFFFF, &star},
-        {600, 500, 0xFFFFFFFF, &star},
-        {650, 350, 0xFFFFFFFF, &star},
-        {650, 550, 0xFFFFFFFF, &star},
-        {550, 450, 0xFFFFFFFF, &star},
-        {750, 450, 0xFFFFFFFF, &star}
+    std::vector<Vertex> star_corners = {
+        {600, 400, 0xFFFFFFFF},
+        {700, 500, 0xFFFFFFFF},
+        {700, 400, 0xFFFFFFFF},
+        {600, 500, 0xFFFFFFFF},
+        {650, 350, 0xFFFFFFFF},
+        {650, 550, 0xFFFFFFFF},
+        {550, 450, 0xFFFFFFFF},
+        {750, 450, 0xFFFFFFFF}
     };
-	star.set_vertices(corners);
-    edges = {
-        {0, 1, false, &star},
-        {1, 2, false, &star},
-        {2, 3, false, &star},
-        {3, 0, false, &star},
-        {4, 5, false, &star},
-        {5, 6, false, &star},
-        {6, 7, false, &star},
-        {7, 4, false, &star}
+
+    std::vector<Edge> star_edges = {
+        {star_corners[0], star_corners[1], false},
+        {star_corners[1], star_corners[2], false},
+        {star_corners[2], star_corners[3], false},
+        {star_corners[3], star_corners[0], false},
+        {star_corners[4], star_corners[5], false},
+        {star_corners[5], star_corners[6], false},
+        {star_corners[6], star_corners[7], false},
+        {star_corners[7], star_corners[4], false}
     };
-	star.set_edges(edges);
+
+    Polygon star(star_corners, star_edges);
     world_polygons.emplace_back(star);
 }
+
+
 
 
 void get_inputs()
@@ -261,6 +255,8 @@ void update()
 
 	std::vector<Ray> rays = mainDirectional.getRays();
 
+	//lightingSystem.updateDirectionalLight(mainDirectional, world_polygons);
+
 	//calculateRayHits();
 	render();
 }
@@ -305,13 +301,18 @@ void render()
 {
 	display.clearFrameBuffer(0x00000000);
 
-    if (mainDirectional.isActive())
-        display.drawLight(mainDirectional);
+ /*   if (mainDirectional.isActive())
+    {
+	    display.drawLight(mainDirectional);
+
+	    for (auto worldPolygon : world_polygons)
+	    {
+			display.drawCastShadows(worldPolygon.get_shadow());
+	    }
+    }*/
 
 	if (showLightBoundary)
 		display.drawLightBoundary(pointLight);
-
-	display.drawLight(mainDirectional);
 
 	display.drawLight(pointLight);
 

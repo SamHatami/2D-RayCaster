@@ -24,8 +24,9 @@ public:
 	void drawLight(Light& light);
 	void drawPolygon(Polygon& polygon);
 	void drawCastShadows(Shadow& shadow);
-	void rasterizeTriangle(Point& pointA, Point& pointB, Point& pointC, BoundingBox& boundingBox, uint32_t color, Light& light, Point& centerPoint, float
-	                       lightIntensity);
+	void rasterizeShadowTriangle(Point& pointA, Point& pointB, Point& pointC, BoundingBox& boundingBox);
+	void rasterizeLightTriangle(Point& pointA, Point& pointB, Point& pointC, BoundingBox& boundingBox, uint32_t color, Light& light, Point& centerPoint, float
+	                            lightIntensity);
 	// Gets the window dimensions, returns (width, height) in pixels
 	static std::pair<int,int> getWindowDimensions();
 	static std::vector<Line> getWindowBorders();

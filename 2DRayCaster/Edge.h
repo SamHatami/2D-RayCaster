@@ -1,20 +1,21 @@
 #pragma once
 #include "Vector2.h"
 #include "Geometry.h"
-#include "Polygon.h"
 
+struct Vertex;;
 class Polygon;
 
 struct Edge
 {
-	size_t v1;
-	size_t v2;
+	Vertex& v1;
+	Vertex& v2;
 	bool isInternal;
 	vector2 normal;
 
 	Polygon* parent;
 
-	Edge(size_t v1, size_t v2, bool isInternal, Polygon* parent = nullptr);
+	Edge(Vertex& v1, Vertex& v2, bool isInternal);
 	Line toLine() const;
+	Edge& operator=(const Edge& other);
 };
 

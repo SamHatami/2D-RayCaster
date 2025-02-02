@@ -11,7 +11,7 @@ public:
 	LightingSystem() : rayCaster() {};
 	void updatePointLight(PointLight& light, const std::vector<Polygon>& polgyons);
 	void updateDirectionalLight(DirectionalLight& directional, const std::vector<Wall>& wall);
-	void updateDirectionalLight(DirectionalLight& directional, const std::vector<Polygon>& polygons);
+	void updateDirectionalLight(DirectionalLight& directional, std::vector<Polygon>& polygons);
 	void drawDirectionaLight(DirectionalLight& directional, Display& display);
 
 private:

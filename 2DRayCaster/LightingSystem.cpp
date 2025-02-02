@@ -87,54 +87,59 @@ void LightingSystem::updateDirectionalLight(DirectionalLight& directional, const
 	}
 }
 
+void LightingSystem::updateDirectionalLight(DirectionalLight& directional, std::vector<Polygon>& polygons)
+{
+	for (auto& polygon : polygons)
+	{
+		// Simple shadow test - if any edge faces away from light, create shadow
+		bool needsShadow = false;
+		for (const auto& edge : polygon.get_all_edges())
+		{
+			float dot = vector2::Dot(edge.normal, directional.direction);
+			if (dot > 0)
+			{
+				needsShadow = true;
+				break;
+			}
+		}
+
+		if (needsShadow)
+		{
+			Shadow shadow = createShadow(directional, polygon.get_all_edges());
+			polygon.set_shadow(shadow);
+		}
+	}
+}
+
 Shadow LightingSystem::createShadow(DirectionalLight& directional, const std::vector<Edge>& edges)
 {
-	std::vector<Point> endPoints;
-	std::vector<Edge> culledEdges;
-
-	for (int i = 0; i < edges.size(); i++) //add all endPoints, except boundary walls , then do check for distinct points.
-	{
-		float dot = vector2::Dot(edges[i].normal, directional.direction);
-		if (dot < 0) //lit walls
-			continue;
-
-		culledEdges.push_back(edges[i]);
-		endPoints.push_back(edges[i].parent->get_vertex_at_index(edges[i].v1).toPoint());;
-		endPoints.push_back(edges[i].parent->get_vertex_at_index(edges[i].v2).toPoint());
-	}
-
-	std::cout << "DirectionalLight received " << endPoints.size() << " endpoints\n";
-
-	directional.castRays(endPoints);
-
 	std::vector<Point> shadowPoints;
 
-	for (auto& ray : directional.rays)
+	// Get vertices from shadow-casting edges
+	for (const auto& edge : edges)
 	{
-		shadowPoints.push_back(ray.start);
-		shadowPoints.push_back(ray.end);
+		float dot = vector2::Dot(edge.normal, directional.direction);
+		if (dot > 0)
+		{
+			// Add original points
+			shadowPoints.push_back(edge.v1.toPoint());
+			shadowPoints.push_back(edge.v2.toPoint());
+
+			// Add projected points
+			float projectionLength = 1000.0f; // Just make it long enough to cover screen
+			shadowPoints.push_back({
+				edge.v1.x + directional.direction.x * projectionLength,
+				edge.v1.y + directional.direction.y * projectionLength
+				});
+			shadowPoints.push_back({
+				edge.v2.x + directional.direction.x * projectionLength,
+				edge.v2.y + directional.direction.y * projectionLength
+				});
+		}
 	}
 
 	Shadow shadow;
 	shadow.boundary_points = shadowPoints;
 	return shadow;
-
-}
-
-void LightingSystem::updateDirectionalLight(DirectionalLight& directional, const std::vector<Polygon>& polygons)
-{
-
-	for (auto polygon : polygons)
-	{
-		for (auto edge : polygon.get_all_edges())
-		{
-			float dot = vector2::Dot(edge.normal, directional.direction);
-			if (dot < 0) //Lit edge
-				continue;
-
-			polygon.set_shadow(createShadow(directional, polygon.get_all_edges()));
-		}
-
-	}
 }
 

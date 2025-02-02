@@ -30,6 +30,7 @@ public:
 	std::pair<const Vertex&, const Vertex&> get_edge_vertices(const Edge& edge) const;
 
 	void set_shadow(const Shadow& shadow);
+	Shadow& get_shadow();
 	void set_vertices(const std::vector<Vertex>& vertices);
 	void set_edges(const std::vector<Edge>& edges);
 };
