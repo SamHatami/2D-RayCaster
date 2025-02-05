@@ -16,7 +16,7 @@ void LightingSystem::updatePointLight(PointLight& light, const std::vector<Polyg
 	{
 		// Initialize variables to track the closest hit for the current ray
 		float closestHitDistance = light.getMaxRayLength();
-		Point closestHitPoint;
+		point closestHitPoint;
 
 		// Loop through all walls and check for intersections
 		for (const auto& polygon : polgyons)
@@ -53,7 +53,7 @@ void LightingSystem::updatePointLight(PointLight& light, const std::vector<Polyg
 [[deprecated]]
 void LightingSystem::updateDirectionalLight(DirectionalLight& directional, const std::vector<Wall>& walls)
 {
-	std::vector<Point> endPoints;
+	std::vector<point> endPoints;
 	std::vector<Wall> culledWalls;
 
 	for (int i = 0; i < walls.size(); i++) //add all endPoints, except boundary walls , then do check for distinct points.
@@ -89,7 +89,7 @@ void LightingSystem::updateDirectionalLight(DirectionalLight& directional, const
 
 Shadow LightingSystem::createShadow(DirectionalLight& directional, const std::vector<Edge>& edges)
 {
-	std::vector<Point> endPoints;
+	std::vector<point> endPoints;
 	std::vector<Edge> culledEdges;
 
 	for (int i = 0; i < edges.size(); i++) //add all endPoints, except boundary walls , then do check for distinct points.
@@ -107,7 +107,7 @@ Shadow LightingSystem::createShadow(DirectionalLight& directional, const std::ve
 
 	directional.castRays(endPoints);
 
-	std::vector<Point> shadowPoints;
+	std::vector<point> shadowPoints;
 
 	for (auto& ray : directional.rays)
 	{

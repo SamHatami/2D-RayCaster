@@ -17,7 +17,7 @@ public:
 
 	DirectionalLight(float raySpacing = 0.0f, float angularDirection = 0.0f, float intensity = 100.0f, uint32_t color = 0xFFFFFF00);
 
-	void castRays(const std::vector<Point> endPoints = {}) override;
+	void castRays(const std::vector<point> endPoints = {}) override;
 
 	bool isActive() const;
 

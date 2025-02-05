@@ -24,4 +24,12 @@ struct vector2
 
 	static float Magnitude(vector2& a);
 	static void Normalize(vector2& a);
+
+	friend vector2 operator+(const vector2& a, const vector2& b);
+
+	friend vector2 operator-(const vector2& a, const vector2& b);
+
+	friend vector2 operator*(const vector2& a, float scalar);
+
+	friend vector2 operator/(const vector2& a, float scalar);
 };

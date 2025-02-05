@@ -9,7 +9,7 @@ int main(int argc, char* argv[])
 
 	//I should probably do it the c++ way instead of the c# way...
 
-	mousePosition = Point(300, 300);
+	mousePosition = point(300, 300);
 	rayCaster = RayCaster();
 	lightingSystem = LightingSystem();
 	SDL_Window* window = display.InitializeWindow(800, 600); // probably use smart pointer for this?
@@ -244,8 +244,8 @@ void draw_wall_normals()
 	for (const Wall& wall : walls)
 	{
 		int normalLength = 10;
-		Point normalStart = getMidPoint(wall.definition);
-		Point normalEnd = Point{
+		point normalStart = getMidPoint(wall.definition);
+		point normalEnd = point{
 			wall.normal.x * normalLength + normalStart.x,
 			wall.normal.y * normalLength + normalStart.y
 		};
@@ -289,7 +289,7 @@ void displayRays()
 		// Draw the ray
 		Line line = {
 			rays[i].start,
-			Point(
+			point(
 				rays[i].start.x + (rays[i].direction.x * closestDistance),
 				rays[i].start.y + (rays[i].direction.y * closestDistance))
 		};

@@ -8,12 +8,12 @@ void Light::setColor(const uint32_t newColor)
 	color = newColor;
 }
 
-Point& Light::getPosition()
+point& Light::getPosition()
 {
 	return position;
 }
 
-void Light::setPosition(const Point& pos)
+void Light::setPosition(const point& pos)
 {
 	position = pos;
 }
@@ -53,7 +53,7 @@ float Light::getIntensity() const
 	return intensity;
 }
 
-void Light::castRays(const std::vector<Point> points)
+void Light::castRays(const std::vector<point> points)
 {
 
 }

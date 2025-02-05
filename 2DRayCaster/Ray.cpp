@@ -9,7 +9,7 @@ Ray::Ray() : start{ 0, 0 }, direction{ 0, 0 }, color(0xFFFFFF), rayNr(0), length
 	//is this needed?
 }
 
-Ray::Ray(const Point& origin, const vector2& dir, const float maxLength, const uint32_t col = 0)
+Ray::Ray(const point& origin, const vector2& dir, const float maxLength, const uint32_t col = 0)
 {
 	start = origin;
 	direction = dir.Normalized();
@@ -19,13 +19,13 @@ Ray::Ray(const Point& origin, const vector2& dir, const float maxLength, const u
 	end.y = start.y + direction.y * maxLength;
 
 	hitResult.hasHit = false;
-	hitResult.hitPoint = Point();
+	hitResult.hitPoint = point();
 	hitResult.distance = maxLength;
 }
 
 void Ray::resetHitResult()
 {
 	hitResult.hasHit = false;
-	hitResult.hitPoint = Point();
+	hitResult.hitPoint = point();
 	hitResult.distance = length;
 }

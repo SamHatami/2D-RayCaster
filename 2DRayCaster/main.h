@@ -9,7 +9,7 @@
 bool quit = false;
 Display display;
 RayCaster rayCaster;
-Point mousePosition;
+point mousePosition;
 constexpr int NR_OF_WALLS = 25;
 std::vector<Wall> walls;
 std::vector<Ray> rays;

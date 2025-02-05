@@ -1,6 +1,6 @@
 #include "PointLight.h"
 
-PointLight::PointLight(float radius, float intensity, uint32_t color, Point position)
+PointLight::PointLight(float radius, float intensity, uint32_t color, point position)
     : Light(LightType::Point, intensity, color, maxRayLength, position)
 {
     this->radius = radius;
@@ -31,14 +31,14 @@ PointLight::PointLight(float radius, float intensity, uint32_t color, Point posi
     updateBoundary();
 }
 
-void PointLight::castRays(const std::vector<Point> points)
+void PointLight::castRays(const std::vector<point> points)
 {
     for (int i = 0; i < rays.size(); i++)
     {
         
         rays[i].resetHitResult();
         rays[i].start = position;
-        rays[i].end = Point{
+        rays[i].end = point{
             position.x + rays[i].direction.x * maxRayLength,
             position.y + rays[i].direction.y * maxRayLength
         };
@@ -75,7 +75,7 @@ float PointLight::getRadius()
     return radius;
 }
 
-std::vector<Point> PointLight::getBoundaryPoints()
+std::vector<point> PointLight::getBoundaryPoints()
 {
 	return boundaryPoints;
 }

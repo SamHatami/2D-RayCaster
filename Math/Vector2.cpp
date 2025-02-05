@@ -110,3 +110,46 @@ void vector2::Normalize(vector2& a)
 	a.x /=mag; 
 	a.y /=mag;
 }
+
+void operator+=(vector2& a, const vector2& b)
+{
+	a.x += b.x;
+	a.y += b.y;
+}
+void operator-=(vector2& a, const vector2& b)
+{
+	a.x -= b.x;
+	a.y -= b.y;
+}
+
+void operator/=(vector2& a, float scalar)
+{
+	if (scalar != 0) {
+		a.x /= scalar;
+		a.y /= scalar;
+	}
+	else {
+		a.x = 0;
+		a.y = 0;
+	}
+}
+
+vector2 operator+(const vector2& a, const vector2& b)
+{
+	return { a.x + b.x, a.y + b.y };
+}
+
+vector2 operator-(const vector2& a, const vector2& b)
+{
+	return { a.x - b.x, a.y - b.y };
+}
+
+vector2 operator*(const vector2& a, float scalar)
+{
+	return { a.x * scalar, a.y * scalar };
+}
+
+vector2 operator/(const vector2& a, float scalar)
+{
+	return { a.x / scalar, a.y / scalar };
+}

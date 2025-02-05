@@ -24,11 +24,11 @@ public:
 	void drawLight(Light& light);
 	void drawPolygon(Polygon& polygon);
 	void drawCastShadows(Shadow& shadow);
-	void rasterizeTriangle(Point& pointA, Point& pointB, Point& pointC, BoundingBox& boundingBox, uint32_t color, Light& light, Point& centerPoint, float
+	void rasterizeTriangle(point& pointA, point& pointB, point& pointC, BoundingBox& boundingBox, uint32_t color, Light& light, point& centerPoint, float
 	                       lightIntensity);
 	// Gets the window dimensions, returns (width, height) in pixels
 	static std::pair<int,int> getWindowDimensions();
 	static std::vector<Line> getWindowBorders();
 private:
-	float baryCentricCoordinates(const Point& a, const Point& b, const Point& p);
+	float baryCentricCoordinates(const point& a, const point& b, const point& p);
 };

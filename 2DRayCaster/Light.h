@@ -37,12 +37,12 @@ protected:
 	float intensity;
 	uint32_t color;
 	LightType lightType;
-	Point position;
+	point position;
 	//LightBehaviour lightBehaviour; TODO
 	std::vector<Ray> rays;
 	float rayLength; // Each pointLight controls its own ray length
 
-	Light(LightType type, float intensity = 100.0f, uint32_t color = 0xFFFFFF00, float rayLength = 100.0f, Point position = {0,0})
+	Light(LightType type, float intensity = 100.0f, uint32_t color = 0xFFFFFF00, float rayLength = 100.0f, point position = {0,0})
 		: intensity(intensity)
 		, color(color)
 		, lightType(type)
@@ -57,7 +57,7 @@ public:
 
 	float getIntensity() const;
 
-	virtual void castRays(const std::vector<Point> points = {});
+	virtual void castRays(const std::vector<point> points = {});
 
 	uint32_t getColor() const;
 	void setColor(uint32_t newColor);
@@ -67,8 +67,8 @@ public:
 	void decreaseIntensity();
 	void increaseIntensity();
 
-	Point& getPosition();
-	void setPosition(const Point& pos);
+	point& getPosition();
+	void setPosition(const point& pos);
 
 	std::vector<Ray>& getRays();
 

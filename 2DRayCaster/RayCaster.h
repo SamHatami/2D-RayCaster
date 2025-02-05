@@ -19,9 +19,9 @@ public:
 
 private:
 	static constexpr float EPSILON = 0.0001f;
-		Point mouseStart;
-	static bool is_point_on_line(const Point& p, const Line& l);
-	static bool is_point_on_edge(const Point& p, const Vertex& v1, const Vertex& v2);
-	static void try_snap_to_line_end_points(Point& p, const Line& l, float snapThreshold);
-	static void try_snap_to_edge_vertices(Point& p, const Vertex& v1, const Vertex& v2, float snapThreshold);
+		point mouseStart;
+	static bool is_point_on_line(const point& p, const Line& l);
+	static bool is_point_on_edge(const point& p, const Vertex& v1, const Vertex& v2);
+	static void try_snap_to_line_end_points(point& p, const Line& l, float snapThreshold);
+	static void try_snap_to_edge_vertices(point& p, const Vertex& v1, const Vertex& v2, float snapThreshold);
 };

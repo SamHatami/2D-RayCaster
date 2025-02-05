@@ -5,7 +5,7 @@
 #include "Shadow.h"
 #include "Vertex.h"
 
-struct Point;
+struct point;
 struct Vertex;
 struct Edge;
 
@@ -15,8 +15,8 @@ private:
 	std::vector<Vertex> vertices;
 	std::vector<Edge> edges;
 	BoundingBox boundingBox;
-	Point centerPoint; //local?
-	Point position; //Global
+	point centerPoint; //local?
+	point position; //Global
 	Shadow shadow;
 	void create_bounding_box();
 

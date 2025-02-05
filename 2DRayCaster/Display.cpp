@@ -190,12 +190,12 @@ void Display::drawLine(Line line, uint32_t color)
 
 void Display::drawLightBoundary(PointLight& light)
 {
-	std::vector<Point> boundaryPoints = light.getBoundaryPoints();
+	std::vector<point> boundaryPoints = light.getBoundaryPoints();
 
 	for (int i = 0; i < boundaryPoints.size(); i++)
 	{
-		Point& pointA = boundaryPoints[i];
-		Point& pointB = boundaryPoints[(i + 1) % boundaryPoints.size()];
+		point& pointA = boundaryPoints[i];
+		point& pointB = boundaryPoints[(i + 1) % boundaryPoints.size()];
 
 		//drawPoint(boundaryPoints[i].x, boundaryPoints[i].y, 5, 0xFFFF0000);
 		drawLine(Line{ pointA, pointB }, 0xFF00FF00);
@@ -210,14 +210,14 @@ void Display::drawLight(Light& light)
 	{
 		auto& pointLight = static_cast<PointLight&>(light);
 
-		std::vector<Point> boundaryPoints = pointLight.getBoundaryPoints();
+		std::vector<point> boundaryPoints = pointLight.getBoundaryPoints();
 
 		//I know that each segment of the light is in order since the rays are in order
 
 		for (int i = 0; i < boundaryPoints.size(); i++)
 		{
-			Point& pointA = boundaryPoints[i];
-			Point& pointB = boundaryPoints[(i + 1) % boundaryPoints.size()];
+			point& pointA = boundaryPoints[i];
+			point& pointB = boundaryPoints[(i + 1) % boundaryPoints.size()];
 
 			if (pointsAreCoincident(pointA, pointB))
 				continue;
@@ -260,8 +260,8 @@ void Display::drawCastShadows(Shadow& shadow)
 
 }
 
-void Display::rasterizeTriangle(Point& pointA, Point& pointB, Point& pointC, BoundingBox& boundingBox, uint32_t color,
-                                Light& light, Point& centerPoint, float lightIntensity)
+void Display::rasterizeTriangle(point& pointA, point& pointB, point& pointC, BoundingBox& boundingBox, uint32_t color,
+                                Light& light, point& centerPoint, float lightIntensity)
 {
 	bool setPixelColor = false;
 
@@ -270,7 +270,7 @@ void Display::rasterizeTriangle(Point& pointA, Point& pointB, Point& pointC, Bou
 	{
 		for (int j = boundingBox.minY; j < boundingBox.maxY; j++)
 		{
-			auto pixelPosition = Point{ static_cast<float>(i), static_cast<float>(j) };
+			auto pixelPosition = point{ static_cast<float>(i), static_cast<float>(j) };
 
 			float w0 = baryCentricCoordinates(pointB, pointC, pixelPosition);
 			float w1 = baryCentricCoordinates(pointC, pointA, pixelPosition);
@@ -310,22 +310,22 @@ std::vector<Line> Display::getWindowBorders()
 	boundaries.resize(4);
 
 	//Clockwise: up, right, down, left
-	boundaries[0] = Line{ Point{0, 0}, Point{0, static_cast<float>(window_width)} };
+	boundaries[0] = Line{ point{0, 0}, point{0, static_cast<float>(window_width)} };
 	boundaries[1] = Line{
-		Point{0, static_cast<float>(window_width)},
-		Point{static_cast<float>(window_height), static_cast<float>(window_width)}
+		point{0, static_cast<float>(window_width)},
+		point{static_cast<float>(window_height), static_cast<float>(window_width)}
 	};
 	boundaries[2] = Line{
-		Point{static_cast<float>(window_height), static_cast<float>(window_width)},
-		Point{static_cast<float>(window_height), 0}
+		point{static_cast<float>(window_height), static_cast<float>(window_width)},
+		point{static_cast<float>(window_height), 0}
 	};
-	boundaries[3] = Line{ Point{static_cast<float>(window_height), 0}, Point{0, 0} };
+	boundaries[3] = Line{ point{static_cast<float>(window_height), 0}, point{0, 0} };
 
 	return boundaries;
 }
 
 //https://www.scratchapixel.com/lessons/3d-basic-rendering/rasterization-practical-implementation/rasterization-stage.html
-float Display::baryCentricCoordinates(const Point& a, const Point& b, const Point& c)
+float Display::baryCentricCoordinates(const point& a, const point& b, const point& c)
 {
 	return (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
 }

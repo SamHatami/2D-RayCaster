@@ -21,10 +21,10 @@ void RayCaster::castRays(Light& lightSource)
 
 		for (int i = 0; i < NR_OF_RAYS; i++)
 		{
-			Point centerPoint = lightSource.getPosition();
+			point centerPoint = lightSource.getPosition();
 			rays[i].resetHitResult();
 			rays[i].start = centerPoint;
-			rays[i].end = Point{
+			rays[i].end = point{
 				centerPoint.x + rays[i].direction.x * lightSource.MAX_RAY_LENGTH,
 				centerPoint.y + rays[i].direction.y * lightSource.MAX_RAY_LENGTH
 			};
@@ -36,13 +36,13 @@ void RayCaster::castRays(Light& lightSource)
 		DirectionalLight& dirLight = static_cast<DirectionalLight&>(lightSource);
 		for (int i = 0; i < NR_OF_RAYS; i++)
 		{
-			Point centerPoint = lightSource.getPosition();
+			point centerPoint = lightSource.getPosition();
 			rays[i].resetHitResult();
-			rays[i].start = Point{
+			rays[i].start = point{
 				i * dirLight.raySpacing * cosf(dirLight.angularDirection),
 				i * dirLight.raySpacing * sinf(dirLight.angularDirection)
 			};
-			rays[i].end = Point{
+			rays[i].end = point{
 				rays[i].start.x + dirLight.direction.x * dirLight.rayLength,
 				rays[i].start.y + dirLight.direction.y * dirLight.rayLength
 			};
@@ -80,7 +80,7 @@ RayHitResult RayCaster::check_hit(const Ray& ray, const Light* light, const Edge
 		return ray.hitResult;
 	}
 
-	Point hitPoint = {
+	point hitPoint = {
 		(b2 * c1 - b1 * c2) / det,
 		(a1 * c2 - a2 * c1) / det,
 	}; //Not const -> can be modified when trying to snap to endpoint
@@ -152,7 +152,7 @@ RayHitResult RayCaster::check_hit(const Ray& ray, const Line& lineSegment, const
 		return ray.hitResult;
 	}
 
-	Point hitPoint = {
+	point hitPoint = {
 		(b2 * c1 - b1 * c2) / det,
 		(a1 * c2 - a2 * c1) / det,
 	}; //Not const -> can be modified when trying to snap to endpoint
@@ -199,7 +199,7 @@ RayHitResult RayCaster::check_hit(const Ray& ray, const Line& lineSegment, const
 }
 
 //Only for lights don't already take endPoints in account
-void RayCaster::try_snap_to_line_end_points(Point& p, const Line& l, float snapThreshold)
+void RayCaster::try_snap_to_line_end_points(point& p, const Line& l, float snapThreshold)
 {
 	float dx = p.x - l.end.x;
 	float dy = p.y - l.end.y;
@@ -219,7 +219,7 @@ void RayCaster::try_snap_to_line_end_points(Point& p, const Line& l, float snapT
 	}
 }
 
-void RayCaster::try_snap_to_edge_vertices(Point& p, const Vertex& v1, const Vertex& v2, float snapThreshold)
+void RayCaster::try_snap_to_edge_vertices(point& p, const Vertex& v1, const Vertex& v2, float snapThreshold)
 {
 	float dx = p.x - v1.x;
 	float dy = p.y - v1.y;
@@ -242,7 +242,7 @@ void RayCaster::try_snap_to_edge_vertices(Point& p, const Vertex& v1, const Vert
 //Claude helped me with this one. I had issues with some rays did not hit. Figured it was rounding errors due to fmin/fmax
 //I'll have to read up on this
 // https://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html
-bool RayCaster::is_point_on_line(const Point& p, const Line& l)
+bool RayCaster::is_point_on_line(const point& p, const Line& l)
 {
 	return p.x >= fmin(l.start.x, l.end.x) - RayCaster::EPSILON &&
 		p.x <= fmax(l.start.x, l.end.x) + EPSILON &&
@@ -250,7 +250,7 @@ bool RayCaster::is_point_on_line(const Point& p, const Line& l)
 		p.y <= fmax(l.start.y, l.end.y) + EPSILON;
 }
 
-bool RayCaster::is_point_on_edge(const Point& p, const Vertex& v1, const Vertex& v2)
+bool RayCaster::is_point_on_edge(const point& p, const Vertex& v1, const Vertex& v2)
 {
 
 	return p.x >= fmin(v1.x, v2.x) - RayCaster::EPSILON &&

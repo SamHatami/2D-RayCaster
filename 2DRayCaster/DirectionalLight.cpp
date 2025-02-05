@@ -4,7 +4,7 @@
 #include "RayCaster.h"
 
 DirectionalLight::DirectionalLight(float raySpacing, float angularDirection, float intensity, uint32_t color)
-	: Light(LightType::Directional, intensity, color, DEFAULT_RAY_LENGTH, Point{ 0, 0 })
+	: Light(LightType::Directional, intensity, color, DEFAULT_RAY_LENGTH, point{ 0, 0 })
 {
 	this->angularDirection = angularDirection;
 	this->raySpacing = raySpacing;
@@ -30,7 +30,7 @@ void DirectionalLight::initalizeRays(int nrOfRays)
 	}
 }
 
-void DirectionalLight::castRays(const std::vector<Point> endPoints)
+void DirectionalLight::castRays(const std::vector<point> endPoints)
 {
 	//Perhaps I should check what is in shadow instead of what is lit?
 
@@ -57,7 +57,7 @@ void DirectionalLight::castRays(const std::vector<Point> endPoints)
 		float startY = endPoints[i].y + direction.y * rayLength;
 
 		rays[i].start = endPoints[i];
-		rays[i].end = Point{ startX, startY };
+		rays[i].end = point{ startX, startY };
 		rays[i].length = rayLength;
 
 		//Check against window boundary to get the endpoint and change the length of the ray
