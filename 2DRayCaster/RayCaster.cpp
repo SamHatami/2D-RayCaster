@@ -3,7 +3,7 @@
 #include "DirectionalLight.h"
 #include "EDge.h"
 #include "Light.h"
-#include "PointLight.h"
+#include "vector2Light.h"
 #include "Vertex.h"
 
 RayCaster::RayCaster()
@@ -17,16 +17,16 @@ void RayCaster::castRays(Light& lightSource)
 
 	switch (lightSource.getType())
 	{
-	case Light::LightType::Point:
+	case Light::LightType::vector2:
 
 		for (int i = 0; i < NR_OF_RAYS; i++)
 		{
-			point centerPoint = lightSource.getPosition();
+			vector2 centervector2 = lightSource.getPosition();
 			rays[i].resetHitResult();
-			rays[i].start = centerPoint;
-			rays[i].end = point{
-				centerPoint.x + rays[i].direction.x * lightSource.MAX_RAY_LENGTH,
-				centerPoint.y + rays[i].direction.y * lightSource.MAX_RAY_LENGTH
+			rays[i].start = centervector2;
+			rays[i].end = vector2{
+				centervector2.x + rays[i].direction.x * lightSource.MAX_RAY_LENGTH,
+				centervector2.y + rays[i].direction.y * lightSource.MAX_RAY_LENGTH
 			};
 		}
 		break;
@@ -36,13 +36,13 @@ void RayCaster::castRays(Light& lightSource)
 		DirectionalLight& dirLight = static_cast<DirectionalLight&>(lightSource);
 		for (int i = 0; i < NR_OF_RAYS; i++)
 		{
-			point centerPoint = lightSource.getPosition();
+			vector2 centervector2 = lightSource.getPosition();
 			rays[i].resetHitResult();
-			rays[i].start = point{
+			rays[i].start = vector2{
 				i * dirLight.raySpacing * cosf(dirLight.angularDirection),
 				i * dirLight.raySpacing * sinf(dirLight.angularDirection)
 			};
-			rays[i].end = point{
+			rays[i].end = vector2{
 				rays[i].start.x + dirLight.direction.x * dirLight.rayLength,
 				rays[i].start.y + dirLight.direction.y * dirLight.rayLength
 			};
@@ -51,8 +51,8 @@ void RayCaster::castRays(Light& lightSource)
 	}
 }
 
-// each ray can do this instead...and why pointer to light Sam?
-RayHitResult RayCaster::check_hit(const Ray& ray, const Light* light, const Edge& edge, const Polygon& polgyon, bool snapToEndPoints) 
+// each ray can do this instead...and why vector2er to light Sam?
+RayHitResult RayCaster::check_hit(const Ray& ray, const Light* light, const Edge& edge, const Polygon& polgyon, bool snapToEndvector2s) 
 {
 	std::pair<const Vertex&, const Vertex&> vertices = polgyon.get_edge_vertices(edge);
 
@@ -60,7 +60,7 @@ RayHitResult RayCaster::check_hit(const Ray& ray, const Light* light, const Edge
 
 	//Line-Line Intersection from
 	//https://www.topcoder.com/thrive/articles/Geometry%20Concepts%20part%202:%20%20Line%20Intersection%20and%20its%20Applications
-	//https://www.geeksforgeeks.org/program-for-point-of-intersection-of-two-lines/
+	//https://www.geeksforgeeks.org/program-for-vector2-of-intersection-of-two-lines/
 	//This is also referred in Real-Time Rendering 4th edition, p 1009
 
 	//ray: a1x + b1y = c1
@@ -80,35 +80,35 @@ RayHitResult RayCaster::check_hit(const Ray& ray, const Light* light, const Edge
 		return ray.hitResult;
 	}
 
-	point hitPoint = {
+	vector2 hitvector2 = {
 		(b2 * c1 - b1 * c2) / det,
 		(a1 * c2 - a2 * c1) / det,
-	}; //Not const -> can be modified when trying to snap to endpoint
+	}; //Not const -> can be modified when trying to snap to endvector2
 
-	//Since we are dealing with line segments we need to check if the hit point is on both lines
-	if (!is_point_on_edge(hitPoint, vertices.first,vertices.second) || !is_point_on_line(hitPoint, { ray.start, ray.end }))
+	//Since we are dealing with line segments we need to check if the hit vector2 is on both lines
+	if (!is_vector2_on_edge(hitvector2, vertices.first,vertices.second) || !is_vector2_on_line(hitvector2, { ray.start, ray.end }))
 	{
 		ray.hitResult = { false, {}, 0 };
 		return ray.hitResult;
 	}
 
-	const float distanceToHit = sqrtf(powf(ray.start.x - hitPoint.x, 2) +
-		powf(ray.start.y - hitPoint.y, 2));
+	const float distanceToHit = sqrtf(powf(ray.start.x - hitvector2.x, 2) +
+		powf(ray.start.y - hitvector2.y, 2));
 
-	if (light != nullptr && snapToEndPoints)
+	if (light != nullptr && snapToEndvector2s)
 	{
 		float snapThreshold = 0.0f;
 
-		if (const PointLight* pointLight = dynamic_cast<const PointLight*>(light)) {
-			float raySpacing = distanceToHit * tanf(pointLight->getAngularDirection());
+		if (const vector2Light* vector2Light = dynamic_cast<const vector2Light*>(light)) {
+			float raySpacing = distanceToHit * tanf(vector2Light->getAngularDirection());
 			snapThreshold = raySpacing * 0.6f;
 		}
 
-		try_snap_to_edge_vertices(hitPoint, vertices.first,vertices.second, snapThreshold);
+		try_snap_to_edge_vertices(hitvector2, vertices.first,vertices.second, snapThreshold);
 	}
 
 	const float distance =
-		sqrtf(powf(ray.start.x - hitPoint.x, 2) + powf(ray.start.y - hitPoint.y, 2));
+		sqrtf(powf(ray.start.x - hitvector2.x, 2) + powf(ray.start.y - hitvector2.y, 2));
 
 	//Beyond the ray, no hit
 	if (distance > ray.length + EPSILON)
@@ -120,19 +120,19 @@ RayHitResult RayCaster::check_hit(const Ray& ray, const Light* light, const Edge
 	// If no previous hit or the current hit is closer, update hit result
 	if (!ray.hitResult.hasHit || distance < ray.hitResult.distance)
 	{
-		ray.hitResult = { true, hitPoint, distance };
+		ray.hitResult = { true, hitvector2, distance };
 	}
 
 	return ray.hitResult;
 }
 
-RayHitResult RayCaster::check_hit(const Ray& ray, const Line& lineSegment, const Light* light, bool snapToEndPoints) // each ray can do this instead
+RayHitResult RayCaster::check_hit(const Ray& ray, const Line& lineSegment, const Light* light, bool snapToEndvector2s) // each ray can do this instead
 {
 	//Reset ray length
 
 	//Line-Line Intersection from
 	//https://www.topcoder.com/thrive/articles/Geometry%20Concepts%20part%202:%20%20Line%20Intersection%20and%20its%20Applications
-	//https://www.geeksforgeeks.org/program-for-point-of-intersection-of-two-lines/
+	//https://www.geeksforgeeks.org/program-for-vector2-of-intersection-of-two-lines/
 	//This is also referred in Real-Time Rendering 4th edition, p 1009
 
 	//ray: a1x + b1y = c1
@@ -152,35 +152,35 @@ RayHitResult RayCaster::check_hit(const Ray& ray, const Line& lineSegment, const
 		return ray.hitResult;
 	}
 
-	point hitPoint = {
+	vector2 hitvector2 = {
 		(b2 * c1 - b1 * c2) / det,
 		(a1 * c2 - a2 * c1) / det,
-	}; //Not const -> can be modified when trying to snap to endpoint
+	}; //Not const -> can be modified when trying to snap to endvector2
 
-	//Since we are dealing with line segments we need to check if the hit point is on both lines
-	if (!is_point_on_line(hitPoint, lineSegment) || !is_point_on_line(hitPoint, { ray.start, ray.end }))
+	//Since we are dealing with line segments we need to check if the hit vector2 is on both lines
+	if (!is_vector2_on_line(hitvector2, lineSegment) || !is_vector2_on_line(hitvector2, { ray.start, ray.end }))
 	{
 		ray.hitResult = { false, {}, 0 };
 		return ray.hitResult;
 	}
 
-	const float distanceToHit = sqrtf(powf(ray.start.x - hitPoint.x, 2) +
-		powf(ray.start.y - hitPoint.y, 2));
+	const float distanceToHit = sqrtf(powf(ray.start.x - hitvector2.x, 2) +
+		powf(ray.start.y - hitvector2.y, 2));
 
-	if (light != nullptr && snapToEndPoints)
+	if (light != nullptr && snapToEndvector2s)
 	{
 		float snapThreshold = 0.0f;
 
-		if (const PointLight* pointLight = dynamic_cast<const PointLight*>(light)) {
-			float raySpacing = distanceToHit * tanf(pointLight->getAngularDirection());
+		if (const vector2Light* vector2Light = dynamic_cast<const vector2Light*>(light)) {
+			float raySpacing = distanceToHit * tanf(vector2Light->getAngularDirection());
 			snapThreshold = raySpacing * 0.6f;
 		}
 
-		try_snap_to_line_end_points(hitPoint, lineSegment, snapThreshold);
+		try_snap_to_line_end_vector2s(hitvector2, lineSegment, snapThreshold);
 	}
 
 	const float distance =
-		sqrtf(powf(ray.start.x - hitPoint.x, 2) + powf(ray.start.y - hitPoint.y, 2));
+		sqrtf(powf(ray.start.x - hitvector2.x, 2) + powf(ray.start.y - hitvector2.y, 2));
 
 	//Beyond the ray, no hit
 	if (distance > ray.length + EPSILON)
@@ -192,14 +192,14 @@ RayHitResult RayCaster::check_hit(const Ray& ray, const Line& lineSegment, const
 	// If no previous hit or the current hit is closer, update hit result
 	if (!ray.hitResult.hasHit || distance < ray.hitResult.distance)
 	{
-		ray.hitResult = { true, hitPoint, distance };
+		ray.hitResult = { true, hitvector2, distance };
 	}
 
 	return ray.hitResult;
 }
 
-//Only for lights don't already take endPoints in account
-void RayCaster::try_snap_to_line_end_points(point& p, const Line& l, float snapThreshold)
+//Only for lights don't already take endvector2s in account
+void RayCaster::try_snap_to_line_end_vector2s(vector2& p, const Line& l, float snapThreshold)
 {
 	float dx = p.x - l.end.x;
 	float dy = p.y - l.end.y;
@@ -219,7 +219,7 @@ void RayCaster::try_snap_to_line_end_points(point& p, const Line& l, float snapT
 	}
 }
 
-void RayCaster::try_snap_to_edge_vertices(point& p, const Vertex& v1, const Vertex& v2, float snapThreshold)
+void RayCaster::try_snap_to_edge_vertices(vector2& p, const Vertex& v1, const Vertex& v2, float snapThreshold)
 {
 	float dx = p.x - v1.x;
 	float dy = p.y - v1.y;
@@ -242,7 +242,7 @@ void RayCaster::try_snap_to_edge_vertices(point& p, const Vertex& v1, const Vert
 //Claude helped me with this one. I had issues with some rays did not hit. Figured it was rounding errors due to fmin/fmax
 //I'll have to read up on this
 // https://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html
-bool RayCaster::is_point_on_line(const point& p, const Line& l)
+bool RayCaster::is_vector2_on_line(const vector2& p, const Line& l)
 {
 	return p.x >= fmin(l.start.x, l.end.x) - RayCaster::EPSILON &&
 		p.x <= fmax(l.start.x, l.end.x) + EPSILON &&
@@ -250,7 +250,7 @@ bool RayCaster::is_point_on_line(const point& p, const Line& l)
 		p.y <= fmax(l.start.y, l.end.y) + EPSILON;
 }
 
-bool RayCaster::is_point_on_edge(const point& p, const Vertex& v1, const Vertex& v2)
+bool RayCaster::is_vector2_on_edge(const vector2& p, const Vertex& v1, const Vertex& v2)
 {
 
 	return p.x >= fmin(v1.x, v2.x) - RayCaster::EPSILON &&

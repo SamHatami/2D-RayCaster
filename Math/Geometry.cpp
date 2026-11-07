@@ -1,47 +1,26 @@
 #include "Geometry.h"
-#include <algorithm>
+#include "Vector2.h"
 
 
-BoundingBox getBoundingBoxFromTriangle(point& a, point& b, point& c)
+float Circle::GetInertia(float mass) 
 {
-	BoundingBox boundingBox = {
-		std::min({a.x, b.x, c.x}),
-		std::max({a.x, b.x, c.x}),
-		std::min({a.y, b.y, c.y}),
-		std::max({a.y, b.y, c.y}),
-	};
-
-	return boundingBox;
+	return mass * radius * radius / 2;
 }
 
-float distanceBetweenPoint(point& a, point& b)
+vector2 Circle::GetCenterOfGravity()
 {
-	const float dx = a.x - b.x;
-	const float dy = a.y - b.y;
-	const float distance = sqrtf(dx * dx + dy * dy);
-
-	return distance;
+	return center;
 }
 
-bool pointsAreCoincident(point& a, point& b)
+float Rectangle::GetInertia(float mass) 
 {
-	if (a.x == b.x && a.y == b.y)
-		return true;
-	return false;
+	return mass * (width * width + height * height) / 12;
 }
 
-point getMidPoint(const Line& line)
+vector2 Rectangle::GetCenterOfGravity()
 {
-	return point{
-		(line.start.x + line.end.x) * 0.5f,
-		(line.start.y + line.end.y) * 0.5f
-	};
+	return {start.x + width / 2, start.y + height / 2};
 }
 
-point getMidPoint(const point& a, const point& b)
-{
-	return point{
-		(a.x + b.x) * 0.5f,
-		(a.y + b.y) * 0.5f
-	};
-}
+
+

@@ -1,36 +1,47 @@
 #include "RigidBody.h"
+#include "World.h"
+#include "vector2.h"
 
-#include "world.h"
-
-rigid_body::rigid_body(float mass, Shape shape, point start_position)
+RigidBody::RigidBody(float mass, std::shared_ptr<Shape> shape, vector2 start_position)
+	: mass_(mass), position_(start_position), shape_(std::move(shape))
 {
-	this->mass_ = mass;
-	this->shape_ = shape;
-	inertia_ = shape.GetInertia(mass);
+	inertia_ = shape_->GetInertia(mass);
 	torque_ = 0;
 	angular_velocity_ = 0;
-	center_of_gravity_ = shape.GetCenterOfGravity();
-	position_ = start_position;
+	center_of_gravity_ = shape_->GetCenterOfGravity();
 	velocity_ = vector2(0, 0);
 	acceleration_ = vector2(0, 0);
 }
 
-rigid_body rigid_body::create_particle(float mass, point position)
+RigidBody RigidBody::create_particle(float mass, vector2 position)
 {
-	rigid_body particle = rigid_body(mass, Shape::CreatePoint(position));
+	auto particleShape = std::make_shared<Circle>(position, 2.0f);
+	auto particle = RigidBody(mass, std::move(particleShape), position);
 
 	particle.position_ = position;
 	particle.velocity_ = vector2(0, 0);
 	particle.acceleration_ = vector2(0, 0);
-	particle.inertia_ = Shape::point_inertia;
+	particle.inertia_ = 1.0f;
 	particle.torque_ = 0;
 	particle.angular_velocity_ = 0;
 	particle.center_of_gravity_ = position;
-	
+
 	return particle;
 }
 
-void rigid_body::apply_force(vector2 force, float time_duration)
+void RigidBody::apply_force(vector2 force, float time_duration, bool gravity)
 {
-	velocity_ = velocity_ + (force / mass_) * time_duration - world::gravity;
+	velocity_ = velocity_ + (force / mass_) * time_duration;
+
+	if (gravity)
+		velocity_ = velocity_ - World::GRAVITY;
+
+	position_ = position_ + velocity_ * time_duration;
+
+	trajectory.push_back(position_);
+}
+
+std::vector<vector2> RigidBody::get_trajectory()
+{
+	return trajectory;
 }

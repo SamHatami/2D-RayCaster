@@ -8,7 +8,7 @@ Polygon::Polygon(std::vector<Vertex>& vertices, std::vector<Edge>& edges)
 
 	//TODO:
 	//Create boundingBox
-	//Create center of mass = centerPoint
+	//Create center of mass = centervector2
 
 
 	//create_bounding_box();

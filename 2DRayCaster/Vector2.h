@@ -14,7 +14,7 @@ struct vector2
 	float Magnitude() const;
 	vector2 Normalized() const;
 	static vector2 GetNormal(vector2& a);
-	static vector2 PointsToVector2(const point& a, const point& b);
+	static vector2 vector2sToVector2(const vector2& a, const vector2& b);
 	static vector2 Add(vector2& a, vector2& b);
 	static vector2 Subtract(vector2& a, vector2& b);
 	static float Dot(vector2& a, vector2& b);

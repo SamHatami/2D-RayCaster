@@ -1,58 +1,66 @@
 #pragma once
 #include <cstdint>
+#include "Vector2.h"
 
-//Non light interactive
 
-struct point //Mathematically it make sense, not sure if this causes confusion, since it does the same as vec2. 
+class Shape
 {
-	float x;
-	float y;
-
-	point(float x = 0, float y = 0) : x(x), y(y){}
-
+public:
+	virtual float GetInertia(float mass); //pure virtual GetInertia
+	virtual vector2 GetCenterOfGravity(); //pure
 
 };
 
 struct Line
 {
-	point start;
-	point end;
+	vector2 start;
+	vector2 end;
 	uint32_t color;
 
-	Line() : start(point()), end(point()), color(0)
+	Line() : start(vector2()), end(vector2()), color(0)
 	{
 	}
 
-	Line(point start, point end, uint32_t color = 0xFFFFFF)
+	Line(vector2 start, vector2 end, uint32_t color = 0xFFFFFF)
 		: start(start), end(end), color(color)
 	{
 	}
 
 };
 
-struct Circle
+
+class Circle : public Shape
 {
-	point center;
+public:
+	vector2 center;
 	float radius;
 	uint32_t color;
 
-	Circle(point center, float radius, uint32_t color = 0xFFFFFF)
+	Circle(vector2 center, float radius, uint32_t color = 0xFFFFFF)
 		: center(center), radius(radius), color(color)
 	{
 	}
+
+
+	float GetInertia(float mass) ;
+	vector2 GetCenterOfGravity() ;
 };
 
-struct Rectangle
+class Rectangle : public Shape
 {
-	point start;
+public:
+	vector2 start;
 	int width;
 	int height;
 	uint32_t color;
 
-	Rectangle(point start, int width, int height, uint32_t color = 0xFFFFFF)
+	Rectangle(vector2 start, int width, int height, uint32_t color = 0xFFFFFF)
 		: start(start), width(width), height(height), color(color)
 	{
 	}
+
+	float GetInertia(float mass) ;
+	vector2 GetCenterOfGravity() ;
 };
 
 struct BoundingBox
@@ -63,9 +71,3 @@ struct BoundingBox
 	float maxY;
 };
 
-BoundingBox getBoundingBoxFromTriangle(point& a, point& b, point& c);
-float distanceBetweenPoint(point& a, point& b);
-bool pointsAreCoincident(point& a, point& b);
-point getMidPoint(const Line& line);
-
-point getMidPoint(const point& a, const point& b);

@@ -43,7 +43,7 @@ vector2 vector2::GetNormal(vector2& a)
 	// y' = x sin(t) + y cos(t)
 }
 
-vector2 vector2::PointsToVector2(const point& a, const point& b)
+vector2 vector2::vector2sToVector2(const vector2& a, const vector2& b)
 {
 	return { b.x - a.x, b.y - a.y };
 }

@@ -1,7 +1,7 @@
-#include "PointLight.h"
+#include "vector2Light.h"
 
-PointLight::PointLight(float radius, float intensity, uint32_t color, point position)
-    : Light(LightType::Point, intensity, color, maxRayLength, position)
+vector2Light::vector2Light(float radius, float intensity, uint32_t color, vector2 position)
+    : Light(LightType::vector2, intensity, color, maxRayLength, position)
 {
     this->radius = radius;
     angularRaySeperation = 2 * 3.14159265359f / static_cast<int>(globalResolution);
@@ -24,59 +24,59 @@ PointLight::PointLight(float radius, float intensity, uint32_t color, point posi
         rays[i].length = radius;
     }
 
-    // Initialize boundary points with proper positions
-    boundaryPoints.resize(rays.size());
+    // Initialize boundary vector2s with proper positions
+    boundaryvector2s.resize(rays.size());
 
     castRays();
     updateBoundary();
 }
 
-void PointLight::castRays(const std::vector<point> points)
+void vector2Light::castRays(const std::vector<vector2> vector2s)
 {
     for (int i = 0; i < rays.size(); i++)
     {
         
         rays[i].resetHitResult();
         rays[i].start = position;
-        rays[i].end = point{
+        rays[i].end = vector2{
             position.x + rays[i].direction.x * maxRayLength,
             position.y + rays[i].direction.y * maxRayLength
         };
     }
 }
 
-void PointLight::updateBoundary()
+void vector2Light::updateBoundary()
 {
     for (size_t i = 0; i < rays.size(); i++)
     {
         if (rays[i].hitResult.hasHit)
         {
-            boundaryPoints[i] = rays[i].hitResult.hitPoint;
+            boundaryvector2s[i] = rays[i].hitResult.hitvector2;
         }
         else
         {
-            boundaryPoints[i] = rays[i].end;
+            boundaryvector2s[i] = rays[i].end;
         }
     }
 }
 
-float PointLight::getMaxRayLength()
+float vector2Light::getMaxRayLength()
 {
     return maxRayLength;
 }
 
-float PointLight::getAngularDirection() const
+float vector2Light::getAngularDirection() const
 {
     return  angularRaySeperation;
 }
 
-float PointLight::getRadius()
+float vector2Light::getRadius()
 {
     return radius;
 }
 
-std::vector<point> PointLight::getBoundaryPoints()
+std::vector<vector2> vector2Light::getBoundaryvector2s()
 {
-	return boundaryPoints;
+	return boundaryvector2s;
 }
 

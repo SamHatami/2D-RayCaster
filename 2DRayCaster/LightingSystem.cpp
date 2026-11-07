@@ -7,7 +7,7 @@
 #include "Polygon.h"
 
 
-void LightingSystem::updatePointLight(PointLight& light, const std::vector<Polygon>& polgyons)
+void LightingSystem::updatevector2Light(vector2Light& light, const std::vector<Polygon>& polgyons)
 {
 	light.castRays();
 
@@ -16,7 +16,7 @@ void LightingSystem::updatePointLight(PointLight& light, const std::vector<Polyg
 	{
 		// Initialize variables to track the closest hit for the current ray
 		float closestHitDistance = light.getMaxRayLength();
-		point closestHitPoint;
+		vector2 closestHitvector2;
 
 		// Loop through all walls and check for intersections
 		for (const auto& polygon : polgyons)
@@ -32,13 +32,13 @@ void LightingSystem::updatePointLight(PointLight& light, const std::vector<Polyg
 				if (result.hasHit && result.distance < closestHitDistance)
 				{
 					closestHitDistance = result.distance;
-					closestHitPoint = result.hitPoint;
+					closestHitvector2 = result.hitvector2;
 				}
 			}
 
 			if (closestHitDistance < light.getRadius())
 			{
-				light.rays[i].hitResult = { true, closestHitPoint, closestHitDistance };
+				light.rays[i].hitResult = { true, closestHitvector2, closestHitDistance };
 			}
 			else
 			{
@@ -53,23 +53,23 @@ void LightingSystem::updatePointLight(PointLight& light, const std::vector<Polyg
 [[deprecated]]
 void LightingSystem::updateDirectionalLight(DirectionalLight& directional, const std::vector<Wall>& walls)
 {
-	std::vector<point> endPoints;
+	std::vector<vector2> endvector2s;
 	std::vector<Wall> culledWalls;
 
-	for (int i = 0; i < walls.size(); i++) //add all endPoints, except boundary walls , then do check for distinct points.
+	for (int i = 0; i < walls.size(); i++) //add all endvector2s, except boundary walls , then do check for distinct vector2s.
 	{
 		float dot = vector2::Dot(walls[i].normal, directional.direction);
 		if (dot < 0) //Shadowcasters
 			continue;
 
 		culledWalls.push_back(walls[i]);
-		endPoints.push_back(walls[i].definition.start);
-		endPoints.push_back(walls[i].definition.end);
+		endvector2s.push_back(walls[i].definition.start);
+		endvector2s.push_back(walls[i].definition.end);
 	}
 
-	std::cout << "DirectionalLight received " << endPoints.size() << " endpoints\n";
+	std::cout << "DirectionalLight received " << endvector2s.size() << " endvector2s\n";
 
-	directional.castRays(endPoints);
+	directional.castRays(endvector2s);
 
 	for (auto& ray : directional.rays)
 	{
@@ -89,34 +89,34 @@ void LightingSystem::updateDirectionalLight(DirectionalLight& directional, const
 
 Shadow LightingSystem::createShadow(DirectionalLight& directional, const std::vector<Edge>& edges)
 {
-	std::vector<point> endPoints;
+	std::vector<vector2> endvector2s;
 	std::vector<Edge> culledEdges;
 
-	for (int i = 0; i < edges.size(); i++) //add all endPoints, except boundary walls , then do check for distinct points.
+	for (int i = 0; i < edges.size(); i++) //add all endvector2s, except boundary walls , then do check for distinct vector2s.
 	{
 		float dot = vector2::Dot(edges[i].normal, directional.direction);
 		if (dot < 0) //lit walls
 			continue;
 
 		culledEdges.push_back(edges[i]);
-		endPoints.push_back(edges[i].parent->get_vertex_at_index(edges[i].v1).toPoint());;
-		endPoints.push_back(edges[i].parent->get_vertex_at_index(edges[i].v2).toPoint());
+		endvector2s.push_back(edges[i].parent->get_vertex_at_index(edges[i].v1).tovector2());;
+		endvector2s.push_back(edges[i].parent->get_vertex_at_index(edges[i].v2).tovector2());
 	}
 
-	std::cout << "DirectionalLight received " << endPoints.size() << " endpoints\n";
+	std::cout << "DirectionalLight received " << endvector2s.size() << " endvector2s\n";
 
-	directional.castRays(endPoints);
+	directional.castRays(endvector2s);
 
-	std::vector<point> shadowPoints;
+	std::vector<vector2> shadowvector2s;
 
 	for (auto& ray : directional.rays)
 	{
-		shadowPoints.push_back(ray.start);
-		shadowPoints.push_back(ray.end);
+		shadowvector2s.push_back(ray.start);
+		shadowvector2s.push_back(ray.end);
 	}
 
 	Shadow shadow;
-	shadow.boundary_points = shadowPoints;
+	shadow.boundary_vector2s = shadowvector2s;
 	return shadow;
 
 }

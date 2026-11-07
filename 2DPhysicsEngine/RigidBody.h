@@ -1,10 +1,12 @@
 #pragma once
+
+#include <memory>
+#include <vector>
+
 #include "Shape.h"
 #include "Vector2.h"
 
-struct point;
-
-class rigid_body
+class RigidBody
 {
 private:
 	float mass_;
@@ -13,12 +15,15 @@ private:
 	float inertia_;
 	float torque_;
 	float angular_velocity_;
-	point center_of_gravity_;
-	point position_;
-	Shape shape_;
-public:
+	vector2 center_of_gravity_;
+	vector2 position_;
+	std::vector<vector2> trajectory;
+	std::shared_ptr<Shape> shape_;
 
-	rigid_body(float mass, Shape shape, point start_position);
-	static rigid_body create_particle(float mass, point position);
-	void apply_force(vector2 force, float time_duration);
+public:
+	RigidBody(float mass, std::shared_ptr<Shape> shape, vector2 start_position);
+	static RigidBody create_particle(float mass, vector2 position);
+	void apply_force(vector2 force, float time_duration, bool gravity);
+	vector2 get_position() const { return position_; }
+	std::vector<vector2> get_trajectory();
 };

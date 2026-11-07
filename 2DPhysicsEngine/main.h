@@ -1,7 +1,12 @@
 #pragma once
-class main
-{
-	float time_step = 0.02f;
 
-};
+#include <SDL.h> // Include SDL header
+
+Display display;
+	SDL_Event event;
+	bool quit = false;
+
+	void get_inputs();
+	void update();
+	void render();
 

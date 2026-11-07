@@ -6,13 +6,13 @@ Edge::Edge(size_t v1, size_t v2, bool isInternal, Polygon* parent)
     , isInternal(isInternal)
     , parent(parent)
 {
-	vector2 tempVector = vector2::PointsToVector2(parent->get_vertex_at_index(v1).toPoint(), parent->get_vertex_at_index(v2).toPoint());
+	vector2 tempVector = vector2::vector2sToVector2(parent->get_vertex_at_index(v1).tovector2(), parent->get_vertex_at_index(v2).tovector2());
 	tempVector.Normalize();
 	normal = vector2::GetNormal(tempVector);
 }
 
 Line Edge::toLine() const
 {
-	return Line{ parent->get_vertex_at_index(v1).toPoint(), parent->get_vertex_at_index(v2).toPoint() };
+	return Line{ parent->get_vertex_at_index(v1).tovector2(), parent->get_vertex_at_index(v2).tovector2() };
 }
 

@@ -1,6 +1,6 @@
 #pragma once
 #include "Display.h"
-#include "PointLight.h"
+#include "vector2Light.h"
 #include "RayCaster.h"
 #include "LightingSystem.h"
 #include "Polygon.h"
@@ -9,13 +9,13 @@
 bool quit = false;
 Display display;
 RayCaster rayCaster;
-point mousePosition;
+vector2 mousePosition;
 constexpr int NR_OF_WALLS = 25;
 std::vector<Wall> walls;
 std::vector<Ray> rays;
 std::vector<Polygon> world_polygons;
 SDL_Event event;
-PointLight pointLight;
+vector2Light vector2Light;
 DirectionalLight mainDirectional;
 LightingSystem lightingSystem;
 bool showRays;

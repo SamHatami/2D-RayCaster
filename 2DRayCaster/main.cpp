@@ -9,14 +9,14 @@ int main(int argc, char* argv[])
 
 	//I should probably do it the c++ way instead of the c# way...
 
-	mousePosition = point(300, 300);
+	mousePosition = vector2(300, 300);
 	rayCaster = RayCaster();
 	lightingSystem = LightingSystem();
-	SDL_Window* window = display.InitializeWindow(800, 600); // probably use smart pointer for this?
-	pointLight = PointLight(400, 250, 0xFF0000FF, mousePosition);
+	SDL_Window* window = display.InitializeWindow(800, 600); // probably use smart vector2er for this?
+	vector2Light = vector2Light(400, 250, 0xFF0000FF, mousePosition);
 	mainDirectional = DirectionalLight();
 	mainDirectional.direction = vector2{ -0.25,0.25 };
-	rays = pointLight.getRays();
+	rays = vector2Light.getRays();
 	initialize_world_polygons();
 
 	lightingSystem.updateDirectionalLight(mainDirectional, walls);
@@ -211,12 +211,12 @@ void get_inputs()
 		}
 		if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_LEFT)
 		{
-			pointLight.decreaseIntensity();
+			vector2Light.decreaseIntensity();
 		}
 
 		if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RIGHT)
 		{
-			pointLight.increaseIntensity();
+			vector2Light.increaseIntensity();
 		}
 
 		if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_0)
@@ -244,8 +244,8 @@ void draw_wall_normals()
 	for (const Wall& wall : walls)
 	{
 		int normalLength = 10;
-		point normalStart = getMidPoint(wall.definition);
-		point normalEnd = point{
+		vector2 normalStart = getMidvector2(wall.definition);
+		vector2 normalEnd = vector2{
 			wall.normal.x * normalLength + normalStart.x,
 			wall.normal.y * normalLength + normalStart.y
 		};
@@ -255,9 +255,9 @@ void draw_wall_normals()
 
 void update()
 {
-	pointLight.setPosition(mousePosition);
-	pointLight.updateBoundary();
-	lightingSystem.updatePointLight(pointLight, world_polygons);
+	vector2Light.setPosition(mousePosition);
+	vector2Light.updateBoundary();
+	lightingSystem.updatevector2Light(vector2Light, world_polygons);
 
 	std::vector<Ray> rays = mainDirectional.getRays();
 
@@ -269,15 +269,15 @@ void displayRays()
 {
 	// Update ray color based on hit status
 
-	rays = pointLight.getRays();
+	rays = vector2Light.getRays();
 
-	for (int i = 0; i < pointLight.getCurrentResolution(); i++)
+	for (int i = 0; i < vector2Light.getCurrentResolution(); i++)
 	{
 		float closestDistance = 0.0f;
 		if (rays[i].hitResult.hasHit)
 		{
 			rays[i].color = 0xFF0000FF;
-			display.drawCircle(rays[i].hitResult.hitPoint.x, rays[i].hitResult.hitPoint.y, 5, 0xFF0000FF, false);
+			display.drawCircle(rays[i].hitResult.hitvector2.x, rays[i].hitResult.hitvector2.y, 5, 0xFF0000FF, false);
 			closestDistance = rays[i].hitResult.distance;
 		}
 		else
@@ -289,14 +289,14 @@ void displayRays()
 		// Draw the ray
 		Line line = {
 			rays[i].start,
-			point(
+			vector2(
 				rays[i].start.x + (rays[i].direction.x * closestDistance),
 				rays[i].start.y + (rays[i].direction.y * closestDistance))
 		};
 
 		display.drawLine(line, rays[i].color);
 
-		// Draw the ray start point
+		// Draw the ray start vector2
 		//display.drawCircle(ray.start.x, ray.start.y, 3, 0xFF00FF00, false);
 	}
 }
@@ -309,11 +309,11 @@ void render()
         display.drawLight(mainDirectional);
 
 	if (showLightBoundary)
-		display.drawLightBoundary(pointLight);
+		display.drawLightBoundary(vector2Light);
 
 	display.drawLight(mainDirectional);
 
-	display.drawLight(pointLight);
+	display.drawLight(vector2Light);
 
 	for (Polygon& world_polygon : world_polygons)
 	{

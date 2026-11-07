@@ -1,16 +1,19 @@
 #pragma once
-#include <cstdint>
-#include "Vector2.h"
+#include "vector2.h"
 
-struct world
+namespace World
 {
-	constexpr static vector2 vertical= { 0,1 };
-	constexpr static vector2 horizontal = { 1,0 };
-	constexpr static vector2 gravity = {0,9.81f};
-	constexpr static float ground_friction = 0.8f;
-	constexpr static float air_density = 1.225f;
-	constexpr static float drag_coefficient = 0.47f;
+	//Units are in meters
+	//Force in N
+	//Mass in kg
+	//Time in s
+	//Velocity in m/s
+	//Acceleration in m/s^2
+
+	constexpr vector2 VERTICAL{0, 1};
+	constexpr vector2 HORIZONTAL{1, 0};
+	constexpr vector2 GRAVITY{0, 9.81f}; // m/s^2
+	constexpr float GROUND_FRICTION = 0.8f;
+	constexpr float AIR_DENSITY = 1.225f;
+	constexpr float DRAG_COEFFICIENT = 0.47f;
 };
-
-
-

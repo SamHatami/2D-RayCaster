@@ -3,27 +3,27 @@
 
 //Non light interactive
 
-struct point //Mathematically it make sense, not sure if this causes confusion, since it does the same as vec2. 
+struct vector2 //Mathematically it make sense, not sure if this causes confusion, since it does the same as vec2. 
 {
 	float x;
 	float y;
 
-	point(float x = 0, float y = 0) : x(x), y(y){}
+	vector2(float x = 0, float y = 0) : x(x), y(y){}
 
 
 };
 
 struct Line
 {
-	point start;
-	point end;
+	vector2 start;
+	vector2 end;
 	uint32_t color;
 
-	Line() : start(point()), end(point()), color(0)
+	Line() : start(vector2()), end(vector2()), color(0)
 	{
 	}
 
-	Line(point start, point end, uint32_t color = 0xFFFFFF)
+	Line(vector2 start, vector2 end, uint32_t color = 0xFFFFFF)
 		: start(start), end(end), color(color)
 	{
 	}
@@ -32,11 +32,11 @@ struct Line
 
 struct Circle
 {
-	point center;
+	vector2 center;
 	float radius;
 	uint32_t color;
 
-	Circle(point center, float radius, uint32_t color = 0xFFFFFF)
+	Circle(vector2 center, float radius, uint32_t color = 0xFFFFFF)
 		: center(center), radius(radius), color(color)
 	{
 	}
@@ -44,12 +44,12 @@ struct Circle
 
 struct Rectangle
 {
-	point start;
+	vector2 start;
 	int width;
 	int height;
 	uint32_t color;
 
-	Rectangle(point start, int width, int height, uint32_t color = 0xFFFFFF)
+	Rectangle(vector2 start, int width, int height, uint32_t color = 0xFFFFFF)
 		: start(start), width(width), height(height), color(color)
 	{
 	}
@@ -63,9 +63,9 @@ struct BoundingBox
 	float maxY;
 };
 
-BoundingBox getBoundingBoxFromTriangle(point& a, point& b, point& c);
-float distanceBetweenPoint(point& a, point& b);
-bool pointsAreCoincident(point& a, point& b);
-point getMidPoint(const Line& line);
+BoundingBox getBoundingBoxFromTriangle(vector2& a, vector2& b, vector2& c);
+float distanceBetweenvector2(vector2& a, vector2& b);
+bool vector2sAreCoincident(vector2& a, vector2& b);
+vector2 getMidvector2(const Line& line);
 
-point getMidPoint(const point& a, const point& b);
+vector2 getMidvector2(const vector2& a, const vector2& b);

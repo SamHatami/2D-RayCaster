@@ -5,6 +5,6 @@
 
 struct Shadow
 {
-	std::vector<point> boundary_points;
+	std::vector<vector2> boundary_vector2s;
 };
 

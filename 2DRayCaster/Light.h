@@ -12,7 +12,7 @@ class Light
 public:
 	enum class LightType
 	{
-		Point,
+		vector2,
 		Spot,
 		Directional
 	};
@@ -37,12 +37,12 @@ protected:
 	float intensity;
 	uint32_t color;
 	LightType lightType;
-	point position;
+	vector2 position;
 	//LightBehaviour lightBehaviour; TODO
 	std::vector<Ray> rays;
-	float rayLength; // Each pointLight controls its own ray length
+	float rayLength; // Each vector2Light controls its own ray length
 
-	Light(LightType type, float intensity = 100.0f, uint32_t color = 0xFFFFFF00, float rayLength = 100.0f, point position = {0,0})
+	Light(LightType type, float intensity = 100.0f, uint32_t color = 0xFFFFFF00, float rayLength = 100.0f, vector2 position = {0,0})
 		: intensity(intensity)
 		, color(color)
 		, lightType(type)
@@ -57,7 +57,7 @@ public:
 
 	float getIntensity() const;
 
-	virtual void castRays(const std::vector<point> points = {});
+	virtual void castRays(const std::vector<vector2> vector2s = {});
 
 	uint32_t getColor() const;
 	void setColor(uint32_t newColor);
@@ -67,8 +67,8 @@ public:
 	void decreaseIntensity();
 	void increaseIntensity();
 
-	point& getPosition();
-	void setPosition(const point& pos);
+	vector2& getPosition();
+	void setPosition(const vector2& pos);
 
 	std::vector<Ray>& getRays();
 

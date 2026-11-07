@@ -4,7 +4,7 @@
 #include "RayCaster.h"
 
 DirectionalLight::DirectionalLight(float raySpacing, float angularDirection, float intensity, uint32_t color)
-	: Light(LightType::Directional, intensity, color, DEFAULT_RAY_LENGTH, point{ 0, 0 })
+	: Light(LightType::Directional, intensity, color, DEFAULT_RAY_LENGTH, vector2{ 0, 0 })
 {
 	this->angularDirection = angularDirection;
 	this->raySpacing = raySpacing;
@@ -30,38 +30,38 @@ void DirectionalLight::initalizeRays(int nrOfRays)
 	}
 }
 
-void DirectionalLight::castRays(const std::vector<point> endPoints)
+void DirectionalLight::castRays(const std::vector<vector2> endvector2s)
 {
 	//Perhaps I should check what is in shadow instead of what is lit?
 
-	//I could cast rays with a certain interval, but that would require alot of rays to be sure that all the endpoints are hit.
-	//raySpacing will be useless here, since I'll just create intermediate rays depending on the distance between each point.
+	//I could cast rays with a certain interval, but that would require alot of rays to be sure that all the endvector2s are hit.
+	//raySpacing will be useless here, since I'll just create intermediate rays depending on the distance between each vector2.
 
 	//So the idea is:
-	//Create rays towards each endpoint
-	//Check for rays that merge, remove the one that has the farthest endPoint <--- Not sure if this should happen here.
-	//Create intermediate endPoints for future ray bouncing, should be an optional bool and happen in later stage.
+	//Create rays towards each endvector2
+	//Check for rays that merge, remove the one that has the farthest endvector2 <--- Not sure if this should happen here.
+	//Create intermediate endvector2s for future ray bouncing, should be an optional bool and happen in later stage.
 	//Create secondary rays for pnumbra calculations, either here or by a seperate call from lightingsystem?
 
-	if (endPoints.empty())
+	if (endvector2s.empty())
 		return;
 
-	initalizeRays(endPoints.size()); // probably not a good idea to resize this all the time, but should be called if somthing changes in the window.
+	initalizeRays(endvector2s.size()); // probably not a good idea to resize this all the time, but should be called if somthing changes in the window.
 	std::vector<Line> boundaries = Display::getWindowBorders();
 
-	for (int i = 0; i < endPoints.size(); i++)
+	for (int i = 0; i < endvector2s.size(); i++)
 	{
 		rays[i].resetHitResult();
 
-		float startX = endPoints[i].x + direction.x * rayLength;
-		float startY = endPoints[i].y + direction.y * rayLength;
+		float startX = endvector2s[i].x + direction.x * rayLength;
+		float startY = endvector2s[i].y + direction.y * rayLength;
 
-		rays[i].start = endPoints[i];
-		rays[i].end = point{ startX, startY };
+		rays[i].start = endvector2s[i];
+		rays[i].end = vector2{ startX, startY };
 		rays[i].length = rayLength;
 
-		//Check against window boundary to get the endpoint and change the length of the ray
-		//TODO The length of the ray should automatically be recalculated evertime start or end point are changed
+		//Check against window boundary to get the endvector2 and change the length of the ray
+		//TODO The length of the ray should automatically be recalculated evertime start or end vector2 are changed
 
 		for (int j = 0; j < boundaries.size(); j++)
 		{
@@ -69,8 +69,8 @@ void DirectionalLight::castRays(const std::vector<point> endPoints)
 
 			if (hit_result.hasHit)
 			{
-				rays[i].end = hit_result.hitPoint;
-				rays[i].length = distanceBetweenPoint(rays[i].start, rays[i].end);
+				rays[i].end = hit_result.hitvector2;
+				rays[i].length = distanceBetweenvector2(rays[i].start, rays[i].end);
 				break;
 			}
 		}
@@ -90,11 +90,11 @@ bool DirectionalLight::isActive() const
 //for (int i = 0; i < rays.size(); i++)
 //{
 //
-//	rays[i].start = Point{
+//	rays[i].start = vector2{
 //		i * raySpacing * cosf(angularDirection),
 //		i * raySpacing * sinf(angularDirection)
 //	};
-//	rays[i].end = Point{
+//	rays[i].end = vector2{
 //		rays[i].start.x + direction.x * rayLength,
 //		rays[i].start.y + direction.y * rayLength
 //	};

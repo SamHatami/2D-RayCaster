@@ -2,7 +2,7 @@
 #include <algorithm>
 
 
-BoundingBox getBoundingBoxFromTriangle(point& a, point& b, point& c)
+BoundingBox getBoundingBoxFromTriangle(vector2& a, vector2& b, vector2& c)
 {
 	BoundingBox boundingBox = {
 		std::min({a.x, b.x, c.x}),
@@ -14,7 +14,7 @@ BoundingBox getBoundingBoxFromTriangle(point& a, point& b, point& c)
 	return boundingBox;
 }
 
-float distanceBetweenPoint(point& a, point& b)
+float distanceBetweenvector2(vector2& a, vector2& b)
 {
 	const float dx = a.x - b.x;
 	const float dy = a.y - b.y;
@@ -23,24 +23,24 @@ float distanceBetweenPoint(point& a, point& b)
 	return distance;
 }
 
-bool pointsAreCoincident(point& a, point& b)
+bool vector2sAreCoincident(vector2& a, vector2& b)
 {
 	if (a.x == b.x && a.y == b.y)
 		return true;
 	return false;
 }
 
-point getMidPoint(const Line& line)
+vector2 getMidvector2(const Line& line)
 {
-	return point{
+	return vector2{
 		(line.start.x + line.end.x) * 0.5f,
 		(line.start.y + line.end.y) * 0.5f
 	};
 }
 
-point getMidPoint(const point& a, const point& b)
+vector2 getMidvector2(const vector2& a, const vector2& b)
 {
-	return point{
+	return vector2{
 		(a.x + b.x) * 0.5f,
 		(a.y + b.y) * 0.5f
 	};

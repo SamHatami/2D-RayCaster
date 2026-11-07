@@ -1,24 +1,24 @@
 #pragma once
 #include "Light.h"
 
-class PointLight :
+class vector2Light :
 	public Light
 {
 private:
 	float radius;
-	std::vector<point> boundaryPoints;
+	std::vector<vector2> boundaryvector2s;
 	float maxRayLength = 200.0f;
 	float angularRaySeperation;
 
 public:
 
-	void castRays(const std::vector<point> points = {}) override;
+	void castRays(const std::vector<vector2> vector2s = {}) override;
 	void updateBoundary();
 	float getMaxRayLength();
 	float getAngularDirection() const;
 	float getRadius();
-	std::vector<point> getBoundaryPoints();
+	std::vector<vector2> getBoundaryvector2s();
 
-	PointLight(float radius = 0.0f, float intensity = 100.0f,
-		uint32_t color = 0xFFFFFF00, point position = { 0,0 });
+	vector2Light(float radius = 0.0f, float intensity = 100.0f,
+		uint32_t color = 0xFFFFFF00, vector2 position = { 0,0 });
 };
